@@ -6,21 +6,22 @@
 
 package internettech;
 
-import internettech.model.Exchange;
+import internettech.server.SaxServer;
 
 /**
  *
  * @author Christian
  */
 public class InternetTech {
-
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        for(int i = 0; i < 100; i++) {
-            Exchange.getInstance().generateAccount();
-        }
+        SaxServer server = new SaxServer(4444);
+        server.start();
     }
+    
+    
     
 }
