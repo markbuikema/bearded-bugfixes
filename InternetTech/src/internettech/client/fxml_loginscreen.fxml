@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="internettech.client.LoginScreenController">
+  <children>
+    <BorderPane layoutX="200.0" layoutY="100.0" prefHeight="200.0" prefWidth="266.0" />
+    <VBox layoutX="167.0" layoutY="100.0" prefHeight="372.0" prefWidth="572.0">
+      <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="SaxExchange">
+          <font>
+            <Font size="40.0" />
+          </font>
+        </Label>
+        <HBox prefHeight="32.0" prefWidth="572.0">
+          <children>
+            <Label prefWidth="100.0" text="Username" />
+            <TextField fx:id="username" prefWidth="200.0" />
+          </children>
+        </HBox>
+        <HBox prefHeight="32.0" prefWidth="572.0">
+          <children>
+            <Label prefWidth="100.0" text="Password" />
+            <PasswordField fx:id="password" prefWidth="200.0" />
+          </children>
+        </HBox>
+        <Button fx:id="loginbutton" cancelButton="false" contentDisplay="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#onLoginClick" prefWidth="296.0" text="Login" />
+      </children>
+    </VBox>
+  </children>
+</AnchorPane>
