@@ -16,53 +16,59 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- *
+ * 
  * @author Christian
  */
 public class MultiSaxServerThread extends Thread {
 
-    private final Socket socket;
+	private final Socket socket;
 
-    MultiSaxServerThread(Socket socket) {
-        this.socket = socket;
-    }
+	MultiSaxServerThread(Socket socket) {
+		this.socket = socket;
+	}
 
-    @Override
-    public void run() {
-        try {
+	@Override
+	public void run() {
+		try {
 
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                            socket.getInputStream()));
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            String inputLine = "", outputLine;
-            SaxProtocol sp = new SaxProtocol();
+			String inputLine = "", outputLine;
 
-            JSONObject json = new JSONObject(inputLine);
-            String method = json.getString("METHOD");
-            String url = json.getString("URL");
-            long date = json.getLong("DATE");
-            String content = json.getString("CONTENT");
+			System.out.println("connected");
+			
+			while ((inputLine = in.readLine()) != null) {
+				System.out.println("input found");
+				
+				SaxProtocol sp = new SaxProtocol();
 
-            SaxRequest request = new SaxRequest(method, url, content, date);
+				JSONObject json = new JSONObject(inputLine);
+				String method = json.getString("METHOD");
+				String url = json.getString("URL");
+				long date = json.getLong("DATE");
+				String content = json.getString("CONTENT");
 
-            SaxResponse response = sp.processInput(request);
+				SaxRequest request = new SaxRequest(method, url, content, date);
+				System.out.println(request.toString());
 
-            outputLine = response.format();
-            out.println(outputLine);
+				SaxResponse response = sp.processInput(request);
 
-            while ((inputLine = in.readLine()) != null) {
-                response = sp.processInput(request); // Response object
-                out.println(response.format());
-            }
+				outputLine = response.format();
+				out.println(outputLine);
+			}
+			System.out.println("while");
 
-            socket.close();
+		} catch (IOException ex) {
+			// Logger.getLogger(MultiSaxServerThread.class.getName()).log(Level.,
+			// null, ex);
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+			}
+		}
 
-        } catch (IOException ex) {
-//            Logger.getLogger(MultiSaxServerThread.class.getName()).log(Level., null, ex);
-        }
-
-    }
+	}
 
 }

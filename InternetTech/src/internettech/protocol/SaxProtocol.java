@@ -6,9 +6,9 @@
 
 package internettech.protocol;
 
-import internettech.json.JSONObject;
 import internettech.model.SaxRequest;
 import internettech.model.SaxResponse;
+import internettech.model.SaxStatus;
 
 /**
  *
@@ -21,7 +21,7 @@ public class SaxProtocol {
         
         
         
-        return null;
+        return new SaxResponse(SaxStatus.MONEY_WITHDRAWN,"Your money has been withdrawn");
     }
     
     
