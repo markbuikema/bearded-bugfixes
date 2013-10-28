@@ -43,7 +43,7 @@ public class Exchange {
     public Account generateAccount() {
 
         Account account = new Account(unusedUsernames.pop(), generatePassword());
-
+        System.out.println(generatePassword());
         return account;
     }
 
@@ -61,7 +61,7 @@ public class Exchange {
         long passwordLong = random.nextLong();
         String password = "";
 
-        for (int i = 0; i < 64; i += 4) {
+        for (int i = 0; i < 64; i += 8) {
             int number = (int) ((passwordLong >> i) & 0xf);
             switch (number) {
                 case 0:
