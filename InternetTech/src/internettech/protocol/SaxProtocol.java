@@ -12,6 +12,11 @@ package internettech.protocol;
  */
 public class SaxProtocol {
     public String processInput(String input) {
-        return input + 1;
+        String[] b = input.split("\\r");
+        System.out.println(b);
+        
+        return input;
     }
+    
+    
 }

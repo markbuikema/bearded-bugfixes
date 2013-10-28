@@ -35,12 +35,13 @@ import java.io.*;
 import java.net.*;
 
 public class SaxClient extends Thread {
-    private final int serverPort = 4444;
-    private final String hostname = "localhost";
     
-    @Override
-    public void run() {
-        
+    
+    
+    
+    public static void main(String[] args) {
+        int serverPort = 4444;
+        String hostname = "localhost";
         try (
             Socket kkSocket = new Socket(hostname, serverPort);
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
@@ -51,11 +52,10 @@ public class SaxClient extends Thread {
                 new BufferedReader(new InputStreamReader(System.in));
             String fromServer;
             String fromUser;
-
+            System.out.println("Client started");
             while ((fromServer = in.readLine()) != null) {
-                System.out.println("Server: " + fromServer);
-                if (fromServer.equals("Bye."))
-                    break;
+                // server closes the connection (exit)
+                System.out.println("Server: "  + fromServer);
                 
                 fromUser = stdIn.readLine();
                 if (fromUser != null) {
