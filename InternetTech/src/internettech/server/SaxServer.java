@@ -15,18 +15,10 @@ import java.net.ServerSocket;
  */
 public class SaxServer extends Thread {
 
-    private final int port;
-    private ServerSocket serverSocket;
-    boolean listening = true;
-    
-
-    public SaxServer(int port) {
-        this.port = port;
-    }
-    
-    @Override
-    public void run() {
-        
+    public static void main(String[] args) {
+        boolean listening = true;
+        int port = 4444;
+        ServerSocket serverSocket;
         
         try {
             serverSocket = new ServerSocket(port);
@@ -40,8 +32,5 @@ public class SaxServer extends Thread {
             System.exit(-1);
         }
     }
-    
-    public InetAddress getInetAddress(){
-        return serverSocket.getInetAddress();
-    }
+
 }

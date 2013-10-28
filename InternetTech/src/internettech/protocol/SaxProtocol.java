@@ -6,16 +6,22 @@
 
 package internettech.protocol;
 
+import internettech.json.JSONObject;
+import internettech.model.SaxRequest;
+import internettech.model.SaxResponse;
+
 /**
  *
  * @author Christian
  */
 public class SaxProtocol {
-    public String processInput(String input) {
-        String[] b = input.split("\\r");
-        System.out.println(b);
+    public SaxResponse processInput(SaxRequest input) {
         
-        return input;
+        
+        
+        
+        
+        return null;
     }
     
     

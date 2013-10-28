@@ -55,7 +55,7 @@ public class SaxClient extends Thread {
             System.out.println("Client started");
             while ((fromServer = in.readLine()) != null) {
                 // server closes the connection (exit)
-                System.out.println("Server: "  + fromServer);
+//                System.out.println("Server: "  + fromServer);
                 
                 fromUser = stdIn.readLine();
                 if (fromUser != null) {
