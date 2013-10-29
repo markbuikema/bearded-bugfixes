@@ -23,6 +23,7 @@ public class SaxServer extends Thread {
             serverSocket = new ServerSocket(port);
            
             while (listening) {
+                
                 new MultiSaxServerThread(serverSocket.accept()).start();
             }
             serverSocket.close();

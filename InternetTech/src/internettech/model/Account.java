@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package internettech.model;
 
+import internettech.json.JSONObject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,22 +15,19 @@ import java.util.List;
  * @author Christian
  */
 public class Account {
-    
+
     private String username;
     private String password;
-    private double saldo = 0.0;
+    private float saldo;
     private List<Share> shares;
-    
-    public Account(String username, String password) {
+    private boolean online;
+
+    public Account(String username, String password, float saldo) {
         this.username = username;
         this.password = password;
+        this.saldo = saldo;
     }
 
-    public Account(String username, String password, double saldo) {
-        this.username = username;
-        this.password = password;
-    }
-    
     public String getUsername() {
         return username;
     }
@@ -39,20 +36,12 @@ public class Account {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public double getSaldo() {
+    public float getSaldo() {
         return saldo;
-    }
-
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
     }
 
     public List<Share> getShares() {
@@ -62,8 +51,39 @@ public class Account {
     public void addShare(Share... share) {
         shares.addAll(Arrays.asList(share));
     }
-    
+
     public void removeShare(Share... share) {
         shares.removeAll(Arrays.asList(share));
     }
+
+    protected void withdraw(float amount) {
+        saldo = saldo - amount;
+        System.out.println("withdraw " + amount + ", new amount: " + saldo);
+    }
+
+    protected void deposit(float amount) {
+        saldo = saldo + amount;
+        System.out.println("deposit " + amount + ", new amount: " + saldo);
+    }
+
+    @Override
+    public String toString() {
+        JSONObject account = new JSONObject();
+        account.put("username", username);
+        account.put("password", password);
+        return account.toString();
+    }
+
+    public boolean usernameMatches(String username) {
+        return this.username.equals(username);
+    }
+
+    public boolean passwordMatches(String password) {
+        return this.password.equals(password);
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
 }

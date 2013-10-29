@@ -16,9 +16,8 @@ public class SaxResponse {
     
     private String content;
     
-    public SaxResponse(SaxStatus status, String content) {
+    public SaxResponse(SaxStatus status) {
        this.status = status;
-       this.content = content;
     }
 
     public SaxStatus getStatus() {
@@ -37,8 +36,14 @@ public class SaxResponse {
         this.content = content;
     }
     
-    public String format() {
-       return status.getStatusCode() + "\t" + status.getStatusMessage() + "\n"
-               + "content:" + "\t" + content;
+    public String toString() {
+       String responseString = status.getStatusCode() + " " 
+               + status.getStatusMessage();
+       
+       if(content != null) {
+           responseString += " " + "content: " + content;
+       }
+       
+       return responseString;
     }
 }

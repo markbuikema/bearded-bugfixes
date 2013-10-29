@@ -42,7 +42,8 @@ public class Exchange {
 
     public Account generateAccount() {
 
-        Account account = new Account(unusedUsernames.pop(), generatePassword());
+        Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
+        accounts.add(account);
         System.out.println(generatePassword());
         return account;
     }
@@ -117,5 +118,30 @@ public class Exchange {
         }
         return password;
     }
+
+    public boolean withdraw(Account user, float amount) {
+        
+        if (user.getSaldo() >= amount){
+            user.withdraw(amount);
+            return true;
+        } 
+        return false;
+    }
+    
+    public void deposit(Account user, float amount) {
+        user.deposit(amount);
+    }
+    
+    public Account login(String username, String password) {
+        for (Account account: accounts) {
+            if (account.usernameMatches(username) && account.passwordMatches(password)) {
+                account.setOnline(true);
+                return account;
+            }
+        }
+        return null;
+    }
+    
+    
 
 }

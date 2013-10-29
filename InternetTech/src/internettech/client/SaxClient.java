@@ -41,18 +41,20 @@ public class SaxClient extends Thread {
 		String hostname = "localhost";
 		try (Socket kkSocket = new Socket(hostname, serverPort);
 				PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
+                        ) {
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 			String fromServer;
 			String fromUser;
-			System.out.println("Client started");
+			
 			while ((fromServer = in.readLine()) != null) {
-				// server closes the connection (exit)
-				System.out.println("Server: " + fromServer);
+				//TODO server closes the connection (exit)
+				System.out.println("Server: \n" + fromServer);
+                                
 
 				fromUser = stdIn.readLine();
 				if (fromUser != null) {
-					System.out.println("Client: " + fromUser);
+					System.out.println("Client: \n" + fromUser);
 					out.println(fromUser);
 				}
 			}
