@@ -2,12 +2,13 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="internettech.client.LoginScreenController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="internettech.client.LoginScreen">
   <children>
     <BorderPane layoutX="200.0" layoutY="100.0" prefHeight="200.0" prefWidth="266.0" />
     <VBox layoutX="167.0" layoutY="100.0" prefHeight="372.0" prefWidth="572.0">
@@ -29,7 +30,17 @@
             <PasswordField fx:id="password" prefWidth="200.0" />
           </children>
         </HBox>
-        <Button fx:id="loginbutton" cancelButton="false" contentDisplay="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#onLoginClick" prefWidth="296.0" text="Login" />
+        <Label id="registeredText" fx:id="message" contentDisplay="CENTER" prefWidth="300.0" text="">
+          <VBox.margin>
+            <Insets bottom="5.0" top="5.0" />
+          </VBox.margin>
+        </Label>
+        <Button fx:id="loginbutton" cancelButton="false" contentDisplay="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#onLoginClick" prefWidth="300.0" text="Login" />
+        <Button id="" fx:id="registerButton" alignment="CENTER" cancelButton="false" contentDisplay="RIGHT" defaultButton="false" disable="false" mnemonicParsing="false" onAction="#onRegisterClick" prefWidth="300.0" style="" text="Request account" textAlignment="RIGHT" underline="false" wrapText="false" VBox.vgrow="SOMETIMES">
+          <VBox.margin>
+            <Insets top="16.0" />
+          </VBox.margin>
+        </Button>
       </children>
     </VBox>
   </children>

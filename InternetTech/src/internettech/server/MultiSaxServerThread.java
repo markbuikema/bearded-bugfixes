@@ -42,9 +42,6 @@ public class MultiSaxServerThread extends Thread {
 
             String inputLine, outputLine;
 
-            /**
-             * 1. Hello Client! *
-             */
             out.println((new SaxResponse(SaxStatus.CONNECTION_CREATED)).toString());
 
             while ((inputLine = in.readLine()) != null) {
