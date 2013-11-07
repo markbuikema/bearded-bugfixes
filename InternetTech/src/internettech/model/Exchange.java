@@ -5,11 +5,15 @@
  */
 package internettech.model;
 
+import internettech.manager.AccountManager;
 import java.security.SecureRandom;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,16 +25,32 @@ public class Exchange {
     private List<Account> accounts;
     private Stack<String> unusedUsernames;
     private List<Association> asses;
+    private List<Share> shares;
 
     private Exchange() {
+        shares = new ArrayList<> ();
         accounts = new ArrayList<>();
         asses = new ArrayList<>();
         unusedUsernames = new Stack<>();
         for (int i = 100000; i < 1000000; i++) {
             unusedUsernames.push(String.valueOf(i));
         }
-
+        
         Collections.shuffle(unusedUsernames, new SecureRandom());
+        createTestAsses();
+    }
+    
+    private void createTestAsses() {
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < 20; i++) {
+            Association ass = new Association("Sax" + i);
+            for(int j = 0; j < 5000; j++) {
+                Share share = new Share(ass.getId());
+                shares.add(share);
+            }
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
     }
 
     public static Exchange getInstance() {
@@ -39,11 +59,24 @@ public class Exchange {
         }
         return instance;
     }
-
+    
+    public Account getAccountById(String id) {
+        for (Account account : accounts) {
+            if(account.getId().equals(id)){
+                return account;
+            }
+        }
+        return null;
+    }
+        
+        
     public Account generateAccount() {
-
         Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
-        accounts.add(account);
+        try {
+            AccountManager.getInstance().create(account);
+        } catch (SQLException ex) {
+            Logger.getLogger(Exchange.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.out.println(generatePassword());
         return account;
     }
@@ -56,6 +89,8 @@ public class Exchange {
         }
         account.addShare(share);
     }
+    
+
 
     private String generatePassword() {
         SecureRandom random = new SecureRandom();

@@ -5,6 +5,7 @@
  */
 package internettech.server;
 
+import com.sun.javafx.Utils;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,6 +22,8 @@ public class SaxServer extends Thread {
         boolean listening = true;
         int port = 4444;
         ServerSocket serverSocket;
+        
+       
         
         try {
             serverSocket = new ServerSocket(port);

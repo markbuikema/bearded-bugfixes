@@ -45,7 +45,7 @@ public class MultiSaxServerThread extends Thread {
             out.println((new SaxResponse(SaxStatus.CONNECTION_CREATED)).toString());
 
             while ((inputLine = in.readLine()) != null) {
-
+                
                 SaxResponse response = SaxProtocol.processRequest(inputLine, user);
 
                 if (inputLine.split("\\s")[0].equals("LOGIN_ACCOUNT")) {

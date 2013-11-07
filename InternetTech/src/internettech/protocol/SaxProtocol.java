@@ -5,10 +5,14 @@
  */
 package internettech.protocol;
 
+import internettech.manager.AccountManager;
 import internettech.model.Account;
 import internettech.model.Exchange;
 import internettech.model.SaxResponse;
 import internettech.model.SaxStatus;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,9 +33,9 @@ public final class SaxProtocol {
                 case "MONEY_DEPOSIT":
                     return depositMoney(input, user);
                 case "PURCHASE_SHARE":
-                    break;
+                    return purchaseShare(input, user);
                 case "SELL_SHARE":
-                    break;
+                    return sellShare(input, user);
                 case "GET_SHARES":
                     break;
                 case "GET_ASSOCIATIONS":
@@ -107,7 +111,12 @@ public final class SaxProtocol {
         long date = Long.valueOf(values[1]);
         String username = values[2];
         String password = values[3];
-        Account account = Exchange.getInstance().login(username, password);
+        Account account = null;
+        try {
+            account = AccountManager.getInstance().login(username, password);
+        } catch (SQLException ex) {
+            Logger.getLogger(SaxProtocol.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (account != null) {
             SaxResponse response = new SaxResponse(SaxStatus.LOGIN_SUCCES);
             response.setContent(account.toString());
@@ -116,6 +125,28 @@ public final class SaxProtocol {
             return new SaxResponse(SaxStatus.LOGIN_FAIL);
         }
 
+    }
+    
+    private static SaxResponse purchaseShare(String input, Account user) {
+        String[] values = input.split("\\s");
+        
+        long data = Long.parseLong(values[1]);
+        int amount = Integer.parseInt(values[2]);
+        String valuta = values[3];
+        float cost = Float.parseFloat(values[4]);
+        String accountid = values[5];
+        
+        Account account = Exchange.getInstance().getAccountById(accountid);
+        if(account != null){
+        }        
+        
+        
+        return null;
+        
+    }
+
+    private static SaxResponse sellShare(String input, Account user) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
