@@ -41,7 +41,6 @@ public class Exchange {
     }
     
     private void createTestAsses() {
-        long start = System.currentTimeMillis();
         for(int i = 0; i < 20; i++) {
             Association ass = new Association("Sax" + i);
             for(int j = 0; j < 5000; j++) {
@@ -49,8 +48,6 @@ public class Exchange {
                 shares.add(share);
             }
         }
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
     }
 
     public static Exchange getInstance() {
@@ -77,7 +74,6 @@ public class Exchange {
         } catch (SQLException ex) {
             Logger.getLogger(Exchange.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(generatePassword());
         return account;
     }
 

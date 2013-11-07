@@ -17,12 +17,12 @@ import java.util.UUID;
  */
 public class Account {
 
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
     private float saldo;
     private List<Share> shares;
     private boolean online;
-    private String id;
+    private final String id;
 
     public Account(String username, String password, float saldo) {
         this.username = username;
@@ -46,18 +46,8 @@ public class Account {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
-    }
-    
-    
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public float getSaldo() {
