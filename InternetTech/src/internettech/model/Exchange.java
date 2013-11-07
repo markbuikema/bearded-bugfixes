@@ -28,8 +28,6 @@ public class Exchange {
     private List<Share> shares;
 
     private Exchange() {
-        shares = new ArrayList<> ();
-        accounts = new ArrayList<>();
         asses = new ArrayList<>();
         unusedUsernames = new Stack<>();
         for (int i = 100000; i < 1000000; i++) {
@@ -37,18 +35,9 @@ public class Exchange {
         }
         
         Collections.shuffle(unusedUsernames, new SecureRandom());
-        createTestAsses();
     }
     
-    private void createTestAsses() {
-        for(int i = 0; i < 20; i++) {
-            Association ass = new Association("Sax" + i);
-            for(int j = 0; j < 5000; j++) {
-                Share share = new Share(ass.getId());
-                shares.add(share);
-            }
-        }
-    }
+
 
     public static Exchange getInstance() {
         if (instance == null) {
