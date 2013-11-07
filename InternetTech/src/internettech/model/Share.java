@@ -13,25 +13,40 @@ import java.util.UUID;
  * @author Christian
  */
 public class Share {
-    private final String id;
-    private Association ass;
-    private float price;
+    private final String shareId;
+    private final String assId;
+    private Account owner;
     
-    public Share(){
-        id = UUID.randomUUID().toString();
-        price = 5.0f;
+    private float price = 5.0f;
+    private boolean forSale = false;
+    
+    public Share(String assId) {
+        this.assId = assId;
+        shareId = UUID.randomUUID().toString();
+    }
+    
+    public void setOwner(Account owner) {
+        this.owner = owner;
+    }
+
+    public boolean isForSale() {
+        return forSale;
+    }
+
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
+    }
+    
+    public Account getOwner() {
+        return owner;
     }
     
     public String getId() {
-        return id;
+        return shareId;
     }
     
-    public Association getAssociation() {
-        return ass;
-    }
-    
-    public void setAssociation(Association ass) {
-        this.ass = ass;
+    public String getAssociation() {
+        return assId;
     }
 
     public float getPrice() {

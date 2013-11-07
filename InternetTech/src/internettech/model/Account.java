@@ -10,6 +10,7 @@ import internettech.json.JSONObject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 
@@ -22,11 +23,24 @@ public class Account {
 	private float saldo;
 	private List<Share> shares;
 	private boolean online;
+	private String id;
 
 	public Account(String username, String password, float saldo) {
 		this.username = username;
 		this.password = password;
 		this.saldo = saldo;
+		this.id = UUID.randomUUID().toString();
+	}
+
+	public Account(String id, String username, String password, float saldo) {
+		this.username = username;
+		this.password = password;
+		this.saldo = saldo;
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public String getUsername() {
@@ -35,6 +49,10 @@ public class Account {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 
 	public void setPassword(String password) {

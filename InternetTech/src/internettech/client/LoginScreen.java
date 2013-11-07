@@ -56,21 +56,6 @@ public class LoginScreen extends Application implements Initializable {
 	@FXML
 	private Button registerButton;
 
-	@FXML
-	private Label usernameText;
-
-	@FXML
-	private Label moneyText;
-
-	@FXML
-	private TextField moneyInput;
-
-	@FXML
-	private Button depositButton;
-
-	@FXML
-	private Button withdrawButton;
-
 	private PrintWriter out;
 	private BufferedReader in;
 	private Socket socket;
@@ -100,6 +85,7 @@ public class LoginScreen extends Application implements Initializable {
 			@Override
 			public void run() {
 				try {
+					System.out.println("SHUTDOWN");
 					socket.close();
 					out.close();
 					in.close();
@@ -125,15 +111,16 @@ public class LoginScreen extends Application implements Initializable {
 						System.out.println("Server: \n" + fromServer);
 						final float statusCode = Float.valueOf(fromServer.split("\\s")[0]);
 
-						final String content = fromServer.split("content: ")[1];
+						final String content = statusCode == 1.3f ? fromServer.split("content: ")[1] : "";
 						Platform.runLater(new Runnable() {
 							@Override
 							public void run() {
 								if (statusCode == 1.3f) {
+									System.out.println("Content: " + content);
 									JSONObject json = new JSONObject(content);
 									Account account = new Account(json.getString("username"), json.getString("password"), (float) json
 											.getDouble("money"));
-									onLoginSuccess(account, e);
+									onLoginSuccess(account, out, in, e);
 								} else if (statusCode == 2.2f) {
 									message.setText("Incorrect username or password!");
 								} else {
@@ -145,16 +132,18 @@ public class LoginScreen extends Application implements Initializable {
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ArrayIndexOutOfBoundsException e) {
-					e.printStackTrace();
+
 				}
 			}
 		}.start();
 	}
 
-	protected void onLoginSuccess(Account account, ActionEvent event) {
+	protected void onLoginSuccess(Account account, PrintWriter out, BufferedReader in, ActionEvent event) {
 		Parent root;
 		try {
-			root = FXMLLoader.load(getClass().getResource("fxml_exchangescreen.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_exchangescreen.fxml"));
+			loader.setController(new ExchangeScreen(account, out, in));
+			root = (Parent) loader.load();
 			Stage stage = new Stage();
 			stage.setTitle("SaxExchange");
 			stage.setResizable(false);
