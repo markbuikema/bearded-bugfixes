@@ -29,31 +29,13 @@ public class Exchange {
 	private List<Share> shares;
 
 	private Exchange() {
-		shares = new ArrayList<>();
-		accounts = new ArrayList<>();
 		asses = new ArrayList<>();
 		unusedUsernames = new Stack<>();
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));
 		}
 
-		accounts.add(new Account("admin", "admin", 1337));
-
 		Collections.shuffle(unusedUsernames, new SecureRandom());
-		createTestAsses();
-	}
-
-	private void createTestAsses() {
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 20; i++) {
-			Association ass = new Association("Sax" + i);
-			for (int j = 0; j < 5000; j++) {
-				Share share = new Share(ass.getId());
-				shares.add(share);
-			}
-		}
-		long end = System.currentTimeMillis();
-		System.out.println(end - start);
 	}
 
 	public static Exchange getInstance() {
@@ -79,7 +61,6 @@ public class Exchange {
 		} catch (SQLException ex) {
 			Logger.getLogger(Exchange.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		System.out.println(account);
 		return account;
 	}
 
