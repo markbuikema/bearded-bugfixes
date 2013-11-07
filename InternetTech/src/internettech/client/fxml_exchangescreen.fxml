@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="internettech.client.LoginScreen">
+  <children>
+    <Label layoutX="14.0" layoutY="14.0" prefHeight="79.0" prefWidth="572.0" text="SaxExchange">
+      <font>
+        <Font size="48.0" />
+      </font>
+    </Label>
+    <ListView layoutX="14.0" layoutY="93.0" prefHeight="286.0" prefWidth="415.0" />
+    <VBox layoutX="429.0" layoutY="14.0" prefHeight="365.0" prefWidth="157.0">
+      <children>
+        <HBox prefHeight="16.0" prefWidth="157.0">
+          <children>
+            <Label text="Logged in as:" />
+            <Label fx:id="usernameText" prefWidth="76.0" text="" textAlignment="RIGHT" />
+          </children>
+          <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" fx:id="x1" />
+          </VBox.margin>
+        </HBox>
+        <HBox prefHeight="16.0" prefWidth="157.0" VBox.margin="$x1">
+          <children>
+            <Label prefWidth="56.0" text="Balance:" />
+            <Label fx:id="moneyText" prefWidth="107.0" text="" />
+          </children>
+        </HBox>
+        <Separator prefHeight="56.0" prefWidth="171.0" />
+        <TextField fx:id="moneyInput" prefHeight="21.0" prefWidth="157.0" VBox.margin="$x1" />
+        <VBox minHeight="41.0" prefHeight="41.0" prefWidth="64.0">
+          <children>
+            <Button mnemonicParsing="false" prefWidth="157.0" text="Withdraw" VBox.margin="$x1" />
+            <Button mnemonicParsing="false" prefWidth="157.0" text="Deposit" VBox.margin="$x1" />
+          </children>
+        </VBox>
+      </children>
+    </VBox>
+    <Separator layoutX="426.0" layoutY="14.0" orientation="VERTICAL" prefHeight="79.0" />
+  </children>
+</AnchorPane>
