@@ -5,10 +5,17 @@
  */
 package internettech.protocol;
 
+import internettech.json.JSONArray;
+import internettech.json.JSONException;
+import internettech.json.JSONObject;
+import internettech.manager.AssociationManager;
+import internettech.manager.ShareManager;
 import internettech.model.Account;
+import internettech.model.Association;
 import internettech.model.Exchange;
 import internettech.model.SaxResponse;
 import internettech.model.SaxStatus;
+import internettech.model.UserAccount;
 
 /**
  * 
@@ -19,7 +26,7 @@ public final class SaxProtocol {
 	private SaxProtocol() {
 	}
 
-	public static SaxResponse processRequest(String input, Account user) {
+	public static SaxResponse processRequest(String input, UserAccount user) {
 		String function = input.split("\\s")[0];
 
 		if (user != null) {
@@ -35,7 +42,7 @@ public final class SaxProtocol {
 			case "GET_SHARES":
 				break;
 			case "GET_ASSOCIATIONS":
-				break;
+				return getAssociations();
 			default:
 				return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 			}
@@ -52,7 +59,27 @@ public final class SaxProtocol {
 		return null;
 	}
 
-	private static SaxResponse withdrawMoney(String function, Account user) {
+	private static SaxResponse getAssociations() {
+		try {
+			SaxResponse response = new SaxResponse(SaxStatus.DATA_SUCCES);
+			JSONObject root = new JSONObject();
+			JSONArray array = new JSONArray();
+			for (Association a : AssociationManager.getInstance().getAssociations()) {
+				JSONObject association = new JSONObject();
+				association.put("id", a.getId());
+				association.put("name", a.getName());
+				association.put("shareCount", ShareManager.getInstance().getSharesFromAss(a.getId()).size());
+				array.put(association);
+			}
+			root.put("associations", array);
+			response.setContent(root.toString());
+			return response;
+		} catch (JSONException e) {
+			return new SaxResponse(SaxStatus.DATA_FAIL);
+		}
+	}
+
+	private static SaxResponse withdrawMoney(String function, UserAccount user) {
 		String[] f = function.split("\\s");
 		try {
 			float amount = Float.valueOf(f[1]);
@@ -75,7 +102,7 @@ public final class SaxProtocol {
 
 	}
 
-	private static SaxResponse depositMoney(String function, Account user) {
+	private static SaxResponse depositMoney(String function, UserAccount user) {
 		String[] f = function.split("\\s");
 		try {
 			float amount = Float.valueOf(f[1]);

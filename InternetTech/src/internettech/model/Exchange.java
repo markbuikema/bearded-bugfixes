@@ -22,16 +22,17 @@ public class Exchange {
 
 	private static Exchange instance;
 	private Stack<String> unusedUsernames;
-        private List<UserAccount> onlineUsers;
+	private List<UserAccount> onlineUsers;
 
 	private Exchange() {
 		unusedUsernames = new Stack<>();
-                onlineUsers = new ArrayList<>();
-                
+		onlineUsers = new ArrayList<>();
+
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));
 		}
 		Collections.shuffle(unusedUsernames, new SecureRandom());
+
 	}
 
 	public static Exchange getInstance() {
@@ -57,7 +58,7 @@ public class Exchange {
 	}
 
 	public boolean shareTransaction(Account buyer, Account seller, Association ass, int amount) {
-            return ShareManager.getInstance().transaction(buyer.getId(), seller.getId(), ass.getId(), amount);
+		return ShareManager.getInstance().transaction(buyer.getId(), seller.getId(), ass.getId(), amount);
 	}
 
 	private String generatePassword() {
@@ -139,24 +140,24 @@ public class Exchange {
 		return false;
 	}
 
-	public Account login(String username, String password) {
+	public UserAccount login(String username, String password) {
 		for (UserAccount account : AccountManager.getInstance().getUserAccounts()) {
 			if (account.nameMatches(username) && account.passwordMatches(password)) {
-                            onlineUsers.add(account);
-                            return account;
+				onlineUsers.add(account);
+				return account;
 			}
 		}
 		return null;
 	}
-        
-        public boolean logout(Account account) {
-            for(int i = 0; i < onlineUsers.size(); i++) {
-                if(onlineUsers.get(i).equals(account)) {
-                    onlineUsers.remove(i);
-                    return true;
-                }
-            }
-            return false;
-        }
+
+	public boolean logout(Account account) {
+		for (int i = 0; i < onlineUsers.size(); i++) {
+			if (onlineUsers.get(i).equals(account)) {
+				onlineUsers.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

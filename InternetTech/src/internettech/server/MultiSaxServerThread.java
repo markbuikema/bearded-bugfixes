@@ -7,12 +7,12 @@ package internettech.server;
 
 import internettech.json.JSONException;
 import internettech.json.JSONObject;
-import internettech.model.Account;
 import internettech.model.Exchange;
-
 import internettech.model.SaxResponse;
 import internettech.model.SaxStatus;
+import internettech.model.UserAccount;
 import internettech.protocol.SaxProtocol;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,58 +21,58 @@ import java.net.Socket;
 import java.util.Date;
 
 /**
- *
+ * 
  * @author Christian
  */
 public class MultiSaxServerThread extends Thread {
 
-    private final Socket socket;
-    private Account user;
+	private final Socket socket;
+	private UserAccount user;
 
-    MultiSaxServerThread(Socket socket) {
-        this.socket = socket;
-    }
+	MultiSaxServerThread(Socket socket) {
+		this.socket = socket;
+	}
 
-    @Override
-    public void run() {
-        System.out.println("new connection - " + new Date());
-        try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	@Override
+	public void run() {
+		System.out.println("new connection - " + new Date());
+		try {
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            String inputLine, outputLine;
+			String inputLine, outputLine;
 
-            out.println((new SaxResponse(SaxStatus.CONNECTION_CREATED)).toString());
+			out.println((new SaxResponse(SaxStatus.CONNECTION_CREATED)).toString());
 
-            while ((inputLine = in.readLine()) != null) {
-                
-                SaxResponse response = SaxProtocol.processRequest(inputLine, user);
+			while ((inputLine = in.readLine()) != null) {
 
-                if (inputLine.split("\\s")[0].equals("LOGIN_ACCOUNT")) {
-                    try {
-                        if (response.getContent() != null) {
-                            JSONObject account = new JSONObject(response.getContent());
-                            if (account.has("username") && account.has("password")) {
-                                user = Exchange.getInstance().login(account.getString("username"), account.getString("password"));
-                            }
-                        }
-                    } catch (JSONException e) {
-                    }
-                }
+				SaxResponse response = SaxProtocol.processRequest(inputLine, user);
 
-                out.println(response.toString());
-            }
+				if (inputLine.split("\\s")[0].equals("LOGIN_ACCOUNT")) {
+					try {
+						if (response.getContent() != null) {
+							JSONObject account = new JSONObject(response.getContent());
+							if (account.has("username") && account.has("password")) {
+								user = Exchange.getInstance().login(account.getString("username"), account.getString("password"));
+							}
+						}
+					} catch (JSONException e) {
+					}
+				}
 
-        } catch (IOException ex) {
-            // Logger.getLogger(MultiSaxServerThread.class.getName()).log(Level.,
-            // null, ex);
-        } finally {
-            try {
-                socket.close();
-            } catch (IOException e) {
-            }
-        }
+				out.println(response.toString());
+			}
 
-    }
+		} catch (IOException ex) {
+			// Logger.getLogger(MultiSaxServerThread.class.getName()).log(Level.,
+			// null, ex);
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+			}
+		}
+
+	}
 
 }
