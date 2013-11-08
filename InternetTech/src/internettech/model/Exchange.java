@@ -22,9 +22,12 @@ public class Exchange {
 
 	private static Exchange instance;
 	private Stack<String> unusedUsernames;
+        private List<UserAccount> onlineUsers;
 
 	private Exchange() {
 		unusedUsernames = new Stack<>();
+                onlineUsers = new ArrayList<>();
+                
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));
 		}
@@ -39,7 +42,7 @@ public class Exchange {
 	}
 
 	public Account getAccountById(String id) {
-		for (Account account : AccountManager.getInstance().getAccounts()) {
+		for (Account account : AccountManager.getInstance().getUserAccounts()) {
 			if (account.getId().equals(id)) {
 				return account;
 			}
@@ -47,8 +50,8 @@ public class Exchange {
 		return null;
 	}
 
-	public Account generateAccount() {
-		Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
+	public Account generateUserAccount() {
+		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), -10.0f);
 		AccountManager.getInstance().store(account);
 		return account;
 	}
@@ -119,17 +122,17 @@ public class Exchange {
 		return password;
 	}
 
-	public boolean withdraw(Account user, float amount) {
+	public boolean withdraw(UserAccount user, float amount) {
 
-		if (user.getSaldo() >= amount && user.getSaldo() - amount >= Integer.MIN_VALUE) {
+		if (user.getBalance() >= amount && user.getBalance() - amount >= Integer.MIN_VALUE) {
 			user.withdraw(amount);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean deposit(Account user, float amount) {
-		if (user.getSaldo() + amount <= Integer.MAX_VALUE) {
+	public boolean deposit(UserAccount user, float amount) {
+		if (user.getBalance() + amount <= Integer.MAX_VALUE) {
 			user.deposit(amount);
 			return true;
 		}
@@ -137,13 +140,23 @@ public class Exchange {
 	}
 
 	public Account login(String username, String password) {
-		for (Account account : AccountManager.getInstance().getAccounts()) {
-			if (account.usernameMatches(username) && account.passwordMatches(password)) {
-				account.setOnline(true);
-				return account;
+		for (UserAccount account : AccountManager.getInstance().getUserAccounts()) {
+			if (account.nameMatches(username) && account.passwordMatches(password)) {
+                            onlineUsers.add(account);
+                            return account;
 			}
 		}
 		return null;
 	}
+        
+        public boolean logout(Account account) {
+            for(int i = 0; i < onlineUsers.size(); i++) {
+                if(onlineUsers.get(i).equals(account)) {
+                    onlineUsers.remove(i);
+                    return true;
+                }
+            }
+            return false;
+        }
 
 }

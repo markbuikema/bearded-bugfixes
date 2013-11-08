@@ -4,6 +4,7 @@ import internettech.json.JSONObject;
 import internettech.manager.ShareManager;
 import internettech.model.Account;
 import internettech.model.Association;
+import internettech.model.UserAccount;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import javafx.scene.control.Tooltip;
 
 public class ExchangeScreen implements Initializable {
 
-	private Account account;
+	private UserAccount account;
 	private PrintWriter out;
 	private BufferedReader in;
 	private int threadID;
@@ -46,7 +47,7 @@ public class ExchangeScreen implements Initializable {
 	@FXML
 	private Button withdrawButton;
 
-	public ExchangeScreen(Account acc, PrintWriter out, BufferedReader in) {
+	public ExchangeScreen(UserAccount acc, PrintWriter out, BufferedReader in) {
 		this.account = acc;
 		this.out = out;
 		this.in = in;
@@ -54,8 +55,8 @@ public class ExchangeScreen implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		usernameText.setText(account.getUsername());
-		moneyText.setText(Float.toString(account.getSaldo()));
+		usernameText.setText(account.getName());
+		moneyText.setText(Float.toString(account.getBalance()));
 	}
 
 	@FXML

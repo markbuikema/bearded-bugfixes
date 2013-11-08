@@ -96,7 +96,7 @@ public final class SaxProtocol {
 	}
 
 	private static SaxResponse register() {
-		Account account = Exchange.getInstance().generateAccount();
+		Account account = Exchange.getInstance().generateUserAccount();
 		SaxResponse response = new SaxResponse(SaxStatus.ACCOUNT_CREATED);
 		response.setContent(account.toString());
 		return response;

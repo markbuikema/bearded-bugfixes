@@ -12,28 +12,10 @@ import java.util.UUID;
  *
  * @author Christian
  */
-public class Association {
-    private String name;
-    private final String id;
+public class Association extends Account {
     
     public Association(String name) {
-        this.name = name;
+        super(name);
         id = UUID.randomUUID().toString();
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-    
-    
-    
-    
 }
