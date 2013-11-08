@@ -23,15 +23,11 @@ import java.util.logging.Logger;
 public class ShareManager {
 
     private static ShareManager instance;
+    private final ArrayList<Share> shares;
 
     private ShareManager() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS share(ID,ASSOCIATION,PRICE,FORSALE,ACCOUNT);";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.execute();
-        ps.close();
-        conn.close();
-    }
+        shares = new ArrayList<>();
+     }
 
     public static ShareManager getInstance() throws SQLException {
         if (instance == null) {
@@ -40,110 +36,60 @@ public class ShareManager {
         return instance;
     }
 
-    public final Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ShareManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:saxExchange.db");
-        return conn;
-    }
-
-    public final void create(Share share) throws SQLException {
-        String sql = "INSERT INTO share VALUES(?,?,?,?,?);";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, share.getId());
-        ps.setString(2, share.getAssociation());
-        ps.setFloat(3, share.getPrice());
-        ps.setBoolean(4, share.isForSale());
-        ps.setString(5, share.getOwnerId());
-        ps.execute();
-        ps.close();
-        conn.close();
+    public final void store(Share share) throws SQLException {
+        shares.add(share);
     }
 
     public final Share retrieve(String id) throws SQLException {
-        String sql = "SELECT * FROM share WHERE id='" + id + "';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        Share share = null;
-        if (rs.next()) {
-            share = new Share(
-                    rs.getString("id"),
-                    rs.getString("association"),
-                    rs.getBoolean("forsale"),
-                    rs.getFloat("price"),
-                    rs.getString("owner")
-            );
+        for(Share share : shares) {
+            if(share.getId().equals(id)) {
+                return share;
+            }
         }
-        rs.close();
-        ps.close();
-        conn.close();
-        return share;
+        return null;
     }
 
     public List<Share> getSharesFromAss(String assId) throws SQLException {
-        String sql = "SELECT * FROM share WHERE ASSOCIATION='" + assId + "';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-
-        List<Share> shares = new ArrayList<>();
-        while (rs.next()) {
-            shares.add(new Share(
-                    rs.getString("id"),
-                    rs.getString("association"),
-                    rs.getBoolean("forsale"),
-                    rs.getFloat("price"),
-                    rs.getString("owner")
-            ));
+        List<Share> assShare = new ArrayList<>();
+        for(Share share : shares) {
+            if(share.getAssociation().equals(assId)) {
+                assShare.add(share);
+            }
         }
-        return shares;
+        return assShare;
     }
 
-    public List<Share> getSharesForSale(String assId) throws SQLException {
-        String sql = "SELECT * FROM share WHERE ASSOCIATION='" + assId + "' AND FORSALE=1;";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-
-        List<Share> shares = new ArrayList<>();
-        while (rs.next()) {
-            shares.add(new Share(
-                    rs.getString("id"),
-                    rs.getString("association"),
-                    rs.getBoolean("forsale"),
-                    rs.getFloat("price"),
-                    rs.getString("owner")
-            ));
+    public List<Share> getSharesForSale() throws SQLException {
+        List<Share> assShare = new ArrayList<>();
+        for(Share share : shares) {
+            if(share.isForSale()) {
+                assShare.add(share);
+            }
         }
-        return shares;
+        return assShare;
+    }
+    
+    public List<Share> getSharesForSale(String assId) throws SQLException {
+        List<Share> assShare = new ArrayList<>();
+        for(Share share : shares) {
+            if(share.isForSale() && share.getId().equals(assId)) {
+                assShare.add(share);
+            }
+        }
+        return assShare;
+    }
+    
+    public List<Share> getSharesFromOwner(String ownerId) throws SQLException {
+        List<Share> assShare = new ArrayList<>();
+        for(Share share : shares) {
+            if(share.isForSale() && share.getOwnerId().equals(ownerId)) {
+                assShare.add(share);
+            }
+        }
+        return assShare;
     }
 
     public int getShareCount() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM share;";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        int count = rs.getInt(1);
-        rs.close();
-        ps.close();
-        conn.close();
-        return count;
-    }
-    
-    public int getShareCountByAssociationAndUser(String assId, String ownerId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM share WHERE ASSOCIATION='"+assId+"' AND ACCOUNT='"+ ownerId +"';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        int count = rs.getInt(1);
-        rs.close();
-        ps.close();
-        conn.close();
-        return count;
+        return shares.size();
     }
 }
