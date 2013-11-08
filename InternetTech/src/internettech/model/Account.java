@@ -6,9 +6,6 @@
 package internettech.model;
 
 import internettech.json.JSONObject;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,18 +50,6 @@ public class Account {
 
 	public float getSaldo() {
 		return saldo;
-	}
-
-	public List<Share> getShares() {
-		return Collections.unmodifiableList(shares);
-	}
-
-	public void addShare(Share... share) {
-		shares.addAll(Arrays.asList(share));
-	}
-
-	public void removeShare(Share... share) {
-		shares.removeAll(Arrays.asList(share));
 	}
 
 	protected void withdraw(float amount) {

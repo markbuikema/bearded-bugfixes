@@ -6,7 +6,7 @@
 package internettech.manager;
 
 import internettech.model.Account;
-import java.sql.SQLException;
+import internettech.model.Share;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +21,13 @@ public class AccountManager {
 
     private AccountManager()  {
         accounts = new ArrayList<>(); 
+        accounts.add(new Account("admin", "admin", 1337));
     }
 
     public static AccountManager getInstance()  {
         if (instance == null) {
             instance = new AccountManager();
+            
         }
         return instance;
     }
@@ -56,13 +58,17 @@ public class AccountManager {
         }
         return null;
     }
-
-    private boolean accountExists(Account account)  {
+    
+    public boolean accountExists(Account account)  {
         for(Account acc : accounts) {
             if(acc.getUsername().equals(account.getUsername())) {
                 return true;
             }
         }
         return false;
+    }
+    
+    public List<Account> getAccounts() {
+        return accounts;
     }
 }

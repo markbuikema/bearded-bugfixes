@@ -6,6 +6,7 @@
 package internettech.model;
 
 import internettech.manager.AccountManager;
+import internettech.manager.ShareManager;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -20,20 +21,13 @@ import java.util.Stack;
 public class Exchange {
 
 	private static Exchange instance;
-	private List<Account> accounts;
 	private Stack<String> unusedUsernames;
-	private List<Association> asses;
-	private List<Share> shares;
 
 	private Exchange() {
-		asses = new ArrayList<>();
-		accounts = new ArrayList<>();
-		accounts.add(new Account("admin", "admin", 1337));
 		unusedUsernames = new Stack<>();
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));
 		}
-
 		Collections.shuffle(unusedUsernames, new SecureRandom());
 	}
 
@@ -45,7 +39,7 @@ public class Exchange {
 	}
 
 	public Account getAccountById(String id) {
-		for (Account account : accounts) {
+		for (Account account : AccountManager.getInstance().getAccounts()) {
 			if (account.getId().equals(id)) {
 				return account;
 			}
@@ -59,13 +53,8 @@ public class Exchange {
 		return account;
 	}
 
-	public void addShare(Account account, Share share) {
-		for (Account acc : accounts) {
-			if (acc.getShares().contains(share)) {
-				acc.removeShare(share);
-			}
-		}
-		account.addShare(share);
+	public boolean shareTransaction(Account buyer, Account seller, Association ass, int amount) {
+            return ShareManager.getInstance().transaction(buyer.getId(), seller.getId(), ass.getId(), amount);
 	}
 
 	private String generatePassword() {
@@ -148,7 +137,7 @@ public class Exchange {
 	}
 
 	public Account login(String username, String password) {
-		for (Account account : accounts) {
+		for (Account account : AccountManager.getInstance().getAccounts()) {
 			if (account.usernameMatches(username) && account.passwordMatches(password)) {
 				account.setOnline(true);
 				return account;
