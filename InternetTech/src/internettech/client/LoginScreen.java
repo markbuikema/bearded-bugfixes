@@ -1,7 +1,7 @@
 package internettech.client;
 
 import internettech.json.JSONObject;
-import internettech.model.Account;
+import internettech.model.UserAccount;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -117,8 +117,8 @@ public class LoginScreen extends Application implements Initializable {
 								if (statusCode == 1.3f) {
 									System.out.println("Content: " + content);
 									JSONObject json = new JSONObject(content);
-									Account account = new Account(json.getString("username"), json.getString("password"), (float) json
-											.getDouble("money"));
+									UserAccount account = new UserAccount(json.getString("username"), json.getString("password"),
+											(float) json.getDouble("money"));
 									onLoginSuccess(account, out, in, e);
 								} else if (statusCode == 2.2f) {
 									message.setText("Incorrect username or password!");
@@ -137,7 +137,7 @@ public class LoginScreen extends Application implements Initializable {
 		}.start();
 	}
 
-	protected void onLoginSuccess(Account account, PrintWriter out, BufferedReader in, ActionEvent event) {
+	protected void onLoginSuccess(UserAccount account, PrintWriter out, BufferedReader in, ActionEvent event) {
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_exchangescreen.fxml"));

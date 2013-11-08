@@ -21,36 +21,18 @@ import java.util.Stack;
 public class Exchange {
 
 	private static Exchange instance;
-	private List<Account> accounts;
 	private Stack<String> unusedUsernames;
-	private List<Association> asses;
-	private List<Share> shares;
+	private List<UserAccount> onlineUsers;
 
 	private Exchange() {
-		asses = new ArrayList<>();
-		accounts = new ArrayList<>();
-		accounts.add(new Account("admin", "admin", 1337));
 		unusedUsernames = new Stack<>();
+		onlineUsers = new ArrayList<>();
+
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));
 		}
-
 		Collections.shuffle(unusedUsernames, new SecureRandom());
 
-		createAssociations();
-	}
-
-	public void createAssociations() {
-		asses.add(new Association("Syntaxis"));
-		asses.add(new Association("Link"));
-		asses.add(new Association("Watt"));
-
-		for (Association a : asses) {
-			for (int i = 0; i < 5000; i++)
-				ShareManager.getInstance().store(new Share(a.getId()));
-		}
-
-		System.out.println("Associations created.");
 	}
 
 	public static Exchange getInstance() {
@@ -61,7 +43,7 @@ public class Exchange {
 	}
 
 	public Account getAccountById(String id) {
-		for (Account account : accounts) {
+		for (Account account : AccountManager.getInstance().getUserAccounts()) {
 			if (account.getId().equals(id)) {
 				return account;
 			}
@@ -69,19 +51,14 @@ public class Exchange {
 		return null;
 	}
 
-	public Account generateAccount() {
-		Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
+	public Account generateUserAccount() {
+		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), -10.0f);
 		AccountManager.getInstance().store(account);
 		return account;
 	}
 
-	public void addShare(Account account, Share share) {
-		for (Account acc : accounts) {
-			if (acc.getShares().contains(share)) {
-				acc.removeShare(share);
-			}
-		}
-		account.addShare(share);
+	public boolean shareTransaction(Account buyer, Account seller, Association ass, int amount) {
+		return ShareManager.getInstance().transaction(buyer.getId(), seller.getId(), ass.getId(), amount);
 	}
 
 	private String generatePassword() {
@@ -146,31 +123,41 @@ public class Exchange {
 		return password;
 	}
 
-	public boolean withdraw(Account user, float amount) {
+	public boolean withdraw(UserAccount user, float amount) {
 
-		if (user.getSaldo() >= amount && user.getSaldo() - amount >= Integer.MIN_VALUE) {
+		if (user.getBalance() >= amount && user.getBalance() - amount >= Integer.MIN_VALUE) {
 			user.withdraw(amount);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean deposit(Account user, float amount) {
-		if (user.getSaldo() + amount <= Integer.MAX_VALUE) {
+	public boolean deposit(UserAccount user, float amount) {
+		if (user.getBalance() + amount <= Integer.MAX_VALUE) {
 			user.deposit(amount);
 			return true;
 		}
 		return false;
 	}
 
-	public Account login(String username, String password) {
-		for (Account account : accounts) {
-			if (account.usernameMatches(username) && account.passwordMatches(password)) {
-				account.setOnline(true);
+	public UserAccount login(String username, String password) {
+		for (UserAccount account : AccountManager.getInstance().getUserAccounts()) {
+			if (account.nameMatches(username) && account.passwordMatches(password)) {
+				onlineUsers.add(account);
 				return account;
 			}
 		}
 		return null;
+	}
+
+	public boolean logout(Account account) {
+		for (int i = 0; i < onlineUsers.size(); i++) {
+			if (onlineUsers.get(i).equals(account)) {
+				onlineUsers.remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

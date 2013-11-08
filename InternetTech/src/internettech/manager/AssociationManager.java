@@ -7,6 +7,7 @@
 package internettech.manager;
 
 import internettech.model.Association;
+import internettech.model.Share;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +23,20 @@ public class AssociationManager {
 
 	private AssociationManager() {
 		asses = new ArrayList<>();
+		createAssociations();
+	}
+
+	public void createAssociations() {
+		asses.add(new Association("Syntaxis"));
+		asses.add(new Association("Link"));
+		asses.add(new Association("Watt"));
+
+		for (Association a : asses) {
+			for (int i = 0; i < 5000; i++)
+				ShareManager.getInstance().store(new Share(a.getId()));
+		}
+
+		System.out.println("Associations created.");
 	}
 
 	public static AssociationManager getInstance() {

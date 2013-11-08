@@ -15,6 +15,7 @@ import internettech.model.Association;
 import internettech.model.Exchange;
 import internettech.model.SaxResponse;
 import internettech.model.SaxStatus;
+import internettech.model.UserAccount;
 
 /**
  * 
@@ -25,7 +26,7 @@ public final class SaxProtocol {
 	private SaxProtocol() {
 	}
 
-	public static SaxResponse processRequest(String input, Account user) {
+	public static SaxResponse processRequest(String input, UserAccount user) {
 		String function = input.split("\\s")[0];
 
 		if (user != null) {
@@ -78,7 +79,7 @@ public final class SaxProtocol {
 		}
 	}
 
-	private static SaxResponse withdrawMoney(String function, Account user) {
+	private static SaxResponse withdrawMoney(String function, UserAccount user) {
 		String[] f = function.split("\\s");
 		try {
 			float amount = Float.valueOf(f[1]);
@@ -101,7 +102,7 @@ public final class SaxProtocol {
 
 	}
 
-	private static SaxResponse depositMoney(String function, Account user) {
+	private static SaxResponse depositMoney(String function, UserAccount user) {
 		String[] f = function.split("\\s");
 		try {
 			float amount = Float.valueOf(f[1]);
@@ -122,7 +123,7 @@ public final class SaxProtocol {
 	}
 
 	private static SaxResponse register() {
-		Account account = Exchange.getInstance().generateAccount();
+		Account account = Exchange.getInstance().generateUserAccount();
 		SaxResponse response = new SaxResponse(SaxStatus.ACCOUNT_CREATED);
 		response.setContent(account.toString());
 		return response;
