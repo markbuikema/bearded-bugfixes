@@ -25,22 +25,22 @@ public class ShareManager {
     private static ShareManager instance;
     private final ArrayList<Share> shares;
 
-    private ShareManager() throws SQLException {
+    private ShareManager()  {
         shares = new ArrayList<>();
      }
 
-    public static ShareManager getInstance() throws SQLException {
+    public static ShareManager getInstance()  {
         if (instance == null) {
             instance = new ShareManager();
         }
         return instance;
     }
 
-    public final void store(Share share) throws SQLException {
+    public final void store(Share share)  {
         shares.add(share);
     }
 
-    public final Share retrieve(String id) throws SQLException {
+    public final Share retrieve(String id)  {
         for(Share share : shares) {
             if(share.getId().equals(id)) {
                 return share;
@@ -49,7 +49,7 @@ public class ShareManager {
         return null;
     }
 
-    public List<Share> getSharesFromAss(String assId) throws SQLException {
+    public List<Share> getSharesFromAss(String assId)  {
         List<Share> assShare = new ArrayList<>();
         for(Share share : shares) {
             if(share.getAssociation().equals(assId)) {
@@ -59,7 +59,7 @@ public class ShareManager {
         return assShare;
     }
 
-    public List<Share> getSharesForSale() throws SQLException {
+    public List<Share> getSharesForSale()  {
         List<Share> assShare = new ArrayList<>();
         for(Share share : shares) {
             if(share.isForSale()) {
@@ -69,7 +69,7 @@ public class ShareManager {
         return assShare;
     }
     
-    public List<Share> getSharesForSale(String assId) throws SQLException {
+    public List<Share> getSharesForSale(String assId)  {
         List<Share> assShare = new ArrayList<>();
         for(Share share : shares) {
             if(share.isForSale() && share.getId().equals(assId)) {
@@ -79,7 +79,7 @@ public class ShareManager {
         return assShare;
     }
     
-    public List<Share> getSharesFromOwner(String ownerId) throws SQLException {
+    public List<Share> getSharesFromOwner(String ownerId)  {
         List<Share> assShare = new ArrayList<>();
         for(Share share : shares) {
             if(share.isForSale() && share.getOwnerId().equals(ownerId)) {
@@ -89,7 +89,7 @@ public class ShareManager {
         return assShare;
     }
 
-    public int getShareCount() throws SQLException {
+    public int getShareCount()  {
         return shares.size();
     }
 }

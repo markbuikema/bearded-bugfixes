@@ -6,13 +6,9 @@
 package internettech.manager;
 
 import internettech.model.Account;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -21,97 +17,52 @@ import java.util.logging.Logger;
 public class AccountManager {
 
     private static AccountManager instance;
+    private List<Account> accounts;
 
-    private AccountManager() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS account(ID,USERNAME,PASSWORD,BALANCE);";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.execute();
-        ps.close();
-        conn.close();
+    private AccountManager()  {
+        accounts = new ArrayList<>(); 
     }
 
-    public static AccountManager getInstance() throws SQLException {
+    public static AccountManager getInstance()  {
         if (instance == null) {
             instance = new AccountManager();
         }
         return instance;
     }
 
-    public final Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AccountManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:saxExchange.db");
-        return conn;
-    }
-
-    public final boolean create(Account account) throws SQLException {
+    public final boolean store(Account account)  {
         if (!accountExists(account)) {
-            String sql = "INSERT INTO account VALUES(?,?,?,?);";
-            Connection conn = getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, account.getId());
-            ps.setString(2, account.getUsername());
-            ps.setString(3, account.getPassword());
-            ps.setFloat(4, account.getSaldo());
-            ps.execute();
-            ps.close();
-            conn.close();
+            accounts.add(account);
             return true;
         } else {
             return false;
         }
     }
 
-    public final Account retrieve(Integer id) throws SQLException {
-        String sql = "SELECT * FROM account WHERE id='" + id + "';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        Account account = null;
-        if (rs.next()) {
-            account = new Account(
-                    rs.getString("id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getFloat("balance"));
+    public final Account retrieve(String id)  {
+        for (Account account : accounts) {
+            if(account.getId().equals(id)) {
+                return account;
+            }
         }
-        rs.close();
-        ps.close();
-        conn.close();
-        return account;
+        return null;
     }
 
-    public final Account login(String username, String password) throws SQLException {
-        String sql = "SELECT * FROM account WHERE username='" + username + "' AND password='" + password + "';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        Account account = null;
-        if (rs.next()) {
-            account = new Account(
-                    rs.getString("id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getFloat("balance"));
+    public final Account login(String username, String password)  {
+        for(Account account : accounts) {
+            if(account.getUsername().equals(username) && account.getPassword().equals(password)) {
+                return account;
+            }
         }
-        rs.close();
-        ps.close();
-        conn.close();
-        return account;
+        return null;
     }
 
-    private boolean accountExists(Account account) throws SQLException {
-        String sql = "Select username,id FROM account WHERE username='" + account.getUsername() + "' AND ID='" + account.getId() + "';";
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        boolean exist = rs.next();
-        rs.close();
-        conn.close();
-        return exist;
+    private boolean accountExists(Account account)  {
+        for(Account acc : accounts) {
+            if(acc.getUsername().equals(account.getUsername())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
