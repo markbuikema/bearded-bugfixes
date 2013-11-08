@@ -38,7 +38,7 @@ public final class SaxProtocol {
 			case "PURCHASE_SHARE":
 				return purchaseShare(input, user);
 			case "SELL_SHARE":
-				return sellShare(input, user);
+				return sellShares(input, user);
 			case "GET_SHARES":
 				break;
 			case "GET_ASSOCIATIONS":
@@ -170,17 +170,16 @@ public final class SaxProtocol {
 
 	}
 
-	private static SaxResponse sellShare(String input, Account user) {
-		throw new UnsupportedOperationException("Not supported yet."); // To
-																		// change
-																		// body
-																		// of
-																		// generated
-																		// methods,
-																		// choose
-																		// Tools
-																		// |
-																		// Templates.
-	}
-
+	private static SaxResponse sellShares(String input, UserAccount user) {
+            String[] values = input.split("\\s");
+            
+            
+            int amount = Integer.parseInt(values[1]);
+            String assId = values[2];
+            float price = Float.parseFloat(values[3]);
+            if(ShareManager.getInstance().setSharesForSale(user.getId(), assId, amount, price)) {
+                return new SaxResponse(SaxStatus.SHARE_SOLD);
+            } 
+            return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
+        }
 }

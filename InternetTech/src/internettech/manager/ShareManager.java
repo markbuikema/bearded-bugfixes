@@ -93,6 +93,30 @@ public class ShareManager {
         }
         return false;
     }
+    
+    /**
+     * Transacts an amount of shares between two users from an specific
+     * association.
+     *
+     * @param sellerAccountId The accountId of the selller
+     * @param assId The id of the association
+     * @param amount The amount of shares to transact
+     * @param price The price of one share
+     * @return true if transaction was succesfull, otherwise returns false
+     */
+    public boolean setSharesForSale(String sellerAccountId, String assId, int amount, float price) {
+        List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
+        if (ownerShares.size() > amount) {
+            for (int i = 0; i < amount; i++) {
+                Share share = ownerShares.get(i);
+                share.setForSale(true);
+                share.setPrice(price);
+                setShare(share);
+            }
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Sets a share
@@ -148,7 +172,9 @@ public class ShareManager {
     public List<Share> getSharesFromOwnerForSale(String ownerId, String assId) {
         List<Share> assShare = new ArrayList<>();
         for (Share share : shares) {
-            if (share.isForSale() && share.getOwnerId().equals(ownerId) && share.getAssociationId().equals(assId)) {
+            if (share.isForSale() 
+                    && share.getOwnerId().equals(ownerId) 
+                    && share.getAssociationId().equals(assId)) {
                 assShare.add(share);
             }
         }
