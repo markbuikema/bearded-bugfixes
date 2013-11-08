@@ -52,7 +52,7 @@ public class ShareManager {
     public List<Share> getSharesFromAss(String assId)  {
         List<Share> assShare = new ArrayList<>();
         for(Share share : shares) {
-            if(share.getAssociation().equals(assId)) {
+            if(share.getAssociationId().equals(assId)) {
                 assShare.add(share);
             }
         }

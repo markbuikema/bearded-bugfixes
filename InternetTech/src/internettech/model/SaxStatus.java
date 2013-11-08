@@ -22,7 +22,7 @@ public enum SaxStatus {
 	 */
 	NO_MORE_ACCOUNTS(2.1f, "no more accounts available"), LOGIN_FAIL(2.2f, "login fail: incorrect credentials"), SHARE_PURCHASE_FAIL(2.3f,
 			"insufficient funds"), SHARE_SALE_FAIL(2.4f, "share not found"), WITHDRAWAL_FAIL(2.5f, "insufficient funds"), DEPOSIT_FAIL(
-			2.6f, "amount too much"),
+			2.6f, "amount too much"), DATA_FAIL(2.7f, "could not find the requested data"),
 	/**
 	 * COMMAND FAILED *
 	 */

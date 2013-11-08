@@ -6,6 +6,7 @@
 package internettech.model;
 
 import internettech.manager.AccountManager;
+import internettech.manager.ShareManager;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -35,6 +36,21 @@ public class Exchange {
 		}
 
 		Collections.shuffle(unusedUsernames, new SecureRandom());
+
+		createAssociations();
+	}
+
+	public void createAssociations() {
+		asses.add(new Association("Syntaxis"));
+		asses.add(new Association("Link"));
+		asses.add(new Association("Watt"));
+
+		for (Association a : asses) {
+			for (int i = 0; i < 5000; i++)
+				ShareManager.getInstance().store(new Share(a.getId()));
+		}
+
+		System.out.println("Associations created.");
 	}
 
 	public static Exchange getInstance() {
