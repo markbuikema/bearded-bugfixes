@@ -57,7 +57,7 @@ public class Exchange {
 	public Account generateAccount() {
 		Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
 		try {
-			AccountManager.getInstance().create(account);
+			AccountManager.getInstance().store(account);
 		} catch (SQLException ex) {
 			Logger.getLogger(Exchange.class.getName()).log(Level.SEVERE, null, ex);
 		}
