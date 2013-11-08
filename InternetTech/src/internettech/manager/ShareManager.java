@@ -132,7 +132,7 @@ public class ShareManager {
         List<Share> assShare = new ArrayList<>();
         for (Share share : shares) {
             if (share.getOwnerId().equals(ownerId)
-                    && share.getAssociation().equals(assId)) {
+                    && share.getAssociationId().equals(assId)) {
                 assShare.add(share);
             }
         }
@@ -148,7 +148,7 @@ public class ShareManager {
     public List<Share> getSharesFromOwnerForSale(String ownerId, String assId) {
         List<Share> assShare = new ArrayList<>();
         for (Share share : shares) {
-            if (share.isForSale() && share.getOwnerId().equals(ownerId) && share.getAssociation().equals(assId)) {
+            if (share.isForSale() && share.getOwnerId().equals(ownerId) && share.getAssociationId().equals(assId)) {
                 assShare.add(share);
             }
         }

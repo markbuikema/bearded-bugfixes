@@ -33,7 +33,7 @@ public class AssociationManager {
 
 		for (Association a : asses) {
 			for (int i = 0; i < 5000; i++)
-				ShareManager.getInstance().store(new Share(a.getId()));
+				ShareManager.getInstance().storeShare(new Share(a.getId()));
 		}
 
 		System.out.println("Associations created.");
