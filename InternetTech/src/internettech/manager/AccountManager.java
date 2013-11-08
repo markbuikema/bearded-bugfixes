@@ -17,7 +17,7 @@ import java.util.List;
 public class AccountManager {
 
     private static AccountManager instance;
-    private List<UserAccount> accounts;
+    private final List<UserAccount> accounts;
 
     private AccountManager()  {
         accounts = new ArrayList<>(); 
@@ -31,7 +31,7 @@ public class AccountManager {
         return instance;
     }
 
-    public final boolean store(UserAccount account)  {
+    public final boolean createUser(UserAccount account)  {
         if (!accountExists(account)) {
             accounts.add(account);
             return true;
@@ -40,7 +40,7 @@ public class AccountManager {
         }
     }
 
-    public final Account retrieve(String id)  {
+    public final Account retrieveUser(String id)  {
         for (Account account : accounts) {
             if(account.getId().equals(id)) {
                 return account;
