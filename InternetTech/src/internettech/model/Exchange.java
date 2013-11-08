@@ -8,13 +8,10 @@ package internettech.model;
 import internettech.manager.AccountManager;
 
 import java.security.SecureRandom;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * 
@@ -58,11 +55,7 @@ public class Exchange {
 
 	public Account generateAccount() {
 		Account account = new Account(unusedUsernames.pop(), generatePassword(), -10.0f);
-		try {
-			AccountManager.getInstance().store(account);
-		} catch (SQLException ex) {
-			Logger.getLogger(Exchange.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		AccountManager.getInstance().store(account);
 		return account;
 	}
 

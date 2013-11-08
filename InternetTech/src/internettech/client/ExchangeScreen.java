@@ -1,7 +1,9 @@
 package internettech.client;
 
 import internettech.json.JSONObject;
+import internettech.manager.ShareManager;
 import internettech.model.Account;
+import internettech.model.Association;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +17,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 
 public class ExchangeScreen implements Initializable {
 
@@ -151,5 +155,16 @@ public class ExchangeScreen implements Initializable {
 			}
 		}.start();
 
+	}
+
+	private class ShareCell extends ListCell<Association> {
+		@Override
+		protected void updateItem(Association item, boolean empty) {
+			super.updateItem(item, empty);
+
+			setTooltip(new Tooltip("Click to see shares from association " + item.getName()));
+			setText(item.getName() + " (" + ShareManager.getInstance().getSharesFromAss(item.getId()).size() + ")");
+
+		}
 	}
 }
