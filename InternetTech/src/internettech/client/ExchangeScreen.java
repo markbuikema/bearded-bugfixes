@@ -58,7 +58,7 @@ public class ExchangeScreen implements Initializable {
 	private void onWithdrawClick(ActionEvent e) {
 		new Thread("Thread-withdraw") {
 			public void run() {
-				String fromServer, fromUser = "MONEY_WITHDRAW " + System.currentTimeMillis() + " " + moneyInput.getText();
+				String fromServer, fromUser = "MONEY_WITHDRAW " + moneyInput.getText();
 				if (fromUser != null) {
 					System.out.println("Client: \n" + fromUser);
 					out.println(fromUser);
@@ -96,7 +96,7 @@ public class ExchangeScreen implements Initializable {
 	private void onDepositClick(ActionEvent e) {
 		new Thread("Thread-deposit") {
 			public void run() {
-				String fromServer, fromUser = "MONEY_DEPOSIT " + System.currentTimeMillis() + " " + moneyInput.getText();
+				String fromServer, fromUser = "MONEY_DEPOSIT " + moneyInput.getText();
 				if (fromUser != null) {
 					System.out.println("Client: \n" + fromUser);
 					out.println(fromUser);

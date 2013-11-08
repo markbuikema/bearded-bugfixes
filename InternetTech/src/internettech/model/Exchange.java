@@ -30,6 +30,8 @@ public class Exchange {
 
 	private Exchange() {
 		asses = new ArrayList<>();
+		accounts = new ArrayList<>();
+		accounts.add(new Account("admin", "admin", 1337));
 		unusedUsernames = new Stack<>();
 		for (int i = 100000; i < 1000000; i++) {
 			unusedUsernames.push(String.valueOf(i));

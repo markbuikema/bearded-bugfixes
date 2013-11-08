@@ -55,8 +55,7 @@ public final class SaxProtocol {
 	private static SaxResponse withdrawMoney(String function, Account user) {
 		String[] f = function.split("\\s");
 		try {
-			long date = Long.valueOf(f[1]);
-			float amount = Float.valueOf(f[2]);
+			float amount = Float.valueOf(f[1]);
 			if (amount <= 0.0f) {
 				return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 			}
@@ -79,8 +78,7 @@ public final class SaxProtocol {
 	private static SaxResponse depositMoney(String function, Account user) {
 		String[] f = function.split("\\s");
 		try {
-			long date = Long.valueOf(f[1]);
-			float amount = Float.valueOf(f[2]);
+			float amount = Float.valueOf(f[1]);
 
 			if (amount <= 0.0f) {
 				return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
@@ -107,13 +105,12 @@ public final class SaxProtocol {
 	private static SaxResponse login(String function) {
 		String[] values = function.split("\\s");
 
-		if (values.length != 4) {
+		if (values.length != 3) {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
 
-		long date = Long.valueOf(values[1]);
-		String username = values[2];
-		String password = values[3];
+		String username = values[1];
+		String password = values[2];
 		Account account = Exchange.getInstance().login(username, password);
 		// try {
 		// account = AccountManager.getInstance().login(username, password);
@@ -128,17 +125,15 @@ public final class SaxProtocol {
 		} else {
 			return new SaxResponse(SaxStatus.LOGIN_FAIL);
 		}
-
 	}
 
 	private static SaxResponse purchaseShare(String input, Account user) {
 		String[] values = input.split("\\s");
 
-		long data = Long.parseLong(values[1]);
-		int amount = Integer.parseInt(values[2]);
-		String valuta = values[3];
-		float cost = Float.parseFloat(values[4]);
-		String accountid = values[5];
+		int amount = Integer.parseInt(values[1]);
+		String valuta = values[2];
+		float cost = Float.parseFloat(values[3]);
+		String accountid = values[4];
 
 		Account account = Exchange.getInstance().getAccountById(accountid);
 		if (account != null) {

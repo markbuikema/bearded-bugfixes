@@ -100,8 +100,7 @@ public class LoginScreen extends Application implements Initializable {
 	private void onLoginClick(final ActionEvent e) {
 		new Thread("Thread-login") {
 			public void run() {
-				String fromServer, fromUser = "LOGIN_ACCOUNT " + System.currentTimeMillis() + " " + username.getText() + " "
-						+ password.getText();
+				String fromServer, fromUser = "LOGIN_ACCOUNT " + username.getText() + " " + password.getText();
 				if (fromUser != null) {
 					System.out.println("Client: \n" + fromUser);
 					out.println(fromUser);
