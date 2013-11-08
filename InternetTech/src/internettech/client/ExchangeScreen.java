@@ -98,8 +98,8 @@ public class ExchangeScreen implements Initializable {
 									JSONArray associations = list.getJSONArray("associations");
 									for (int i = 0; i < associations.length(); i++) {
 										JSONObject association = associations.getJSONObject(i);
-										addItem(association.getString("name") + " (" + association.getString("shareCount") + ")",
-												association.getString("id"));
+										addItem(association.getString("name") + " (" + association.getInt("shareCount")
+												+ " shares for sale)", association.getString("id"));
 									}
 								} else {
 									setStatus("Something went wrong.");
