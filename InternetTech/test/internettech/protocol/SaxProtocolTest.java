@@ -227,7 +227,7 @@ public class SaxProtocolTest {
     }
     
     @Test
-    public void testBuyShareSucces() {
+    public void testPurchaseShareSucces() {
         System.out.println("purchase share");
         /** Create some dummy shares **/
         Association ass = new Association("testAss");
@@ -245,6 +245,29 @@ public class SaxProtocolTest {
         
         String input = method + " " + buyer + " "  + seller + " " + assId + " " + amount;
         SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+    
+    @Test
+    public void testPurchaseShareNoSharesForSale() {
+        System.out.println("purchase share, no shares for sale");
+        /** Create some dummy shares **/
+        Association ass = new Association("testAss");
+        for(int i = 0; i < 10; i++) {
+            Share share = new Share(ass.getId());
+            share.setForSale(false);
+            assertEquals(share.getOwnerId(), ass.getId());
+            ShareManager.getInstance().storeShare(share);
+        }
+        String method = "PURCHASE_SHARE";
+        String buyer = testAccount.getId();
+        String seller = ass.getId();
+        int amount = 2;
+        String assId = ass.getId();
+        
+        String input = method + " " + buyer + " "  + seller + " " + assId + " " + amount;
+        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
