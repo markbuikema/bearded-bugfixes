@@ -3,57 +3,61 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package internettech.model;
 
 import java.util.UUID;
 
 /**
- * 
+ *
  * @author Christian
  */
 public class Share {
-	private final String id;
-	private final String assId;
-	private String accId;
 
-	private float price = 5.0f;
-	private boolean forSale = true;
+    private final String id;
+    private final String assId;
+    private String accId;
 
-	public Share(String assId) {
-		this.assId = assId;
-		id = UUID.randomUUID().toString();
-	}
+    private float price = 5.0f;
+    private boolean forSale = true;
 
-	public String getOwnerId() {
-		return accId;
-	}
+    public Share(String assId) {
+        /**
+         * Initially association is the owner *
+         */
+        this.accId = assId;
+        this.assId = assId;
+        id = UUID.randomUUID().toString();
+    }
 
-	public void setOwnerId(String accId) {
-		this.accId = accId;
-	}
+    public String getOwnerId() {
+        return accId;
+    }
 
-	public boolean isForSale() {
-		return forSale;
-	}
+    public void setOwnerId(String accId) {
+        this.accId = accId;
+    }
 
-	public void setForSale(boolean forSale) {
-		this.forSale = forSale;
-	}
+    public boolean isForSale() {
+        return forSale;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
+    }
 
-	public String getAssociationId() {
-		return assId;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public float getPrice() {
-		return price;
-	}
+    public String getAssociationId() {
+        return assId;
+    }
 
-	public void setPrice(float price) {
-		this.price = price;
-	}
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
 }

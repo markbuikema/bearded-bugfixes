@@ -150,16 +150,23 @@ public final class SaxProtocol {
 	private static SaxResponse purchaseShare(String input, Account user) {
 		String[] values = input.split("\\s");
 
-		int amount = Integer.parseInt(values[1]);
-		String valuta = values[2];
-		float cost = Float.parseFloat(values[3]);
-		String accountid = values[4];
+		
+		String buyerId = values[1];
+                
+                /** Only continue if buyer == user **/
+                if(!buyerId.equals(user.getId())) {
+                    return new SaxResponse(SaxStatus.UNAUTHORIZED);
+                }
+                String seller = values[2];
+                String assId = values [3];
+                int amount = Integer.parseInt(values[4]);
+                
+                
+                if(Exchange.getInstance().shareTransaction(buyerId, seller, assId, amount)){
+                    return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+                }
 
-		Account account = Exchange.getInstance().getAccountById(accountid);
-		if (account != null) {
-		}
-
-		return null;
+		return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
 
 	}
 

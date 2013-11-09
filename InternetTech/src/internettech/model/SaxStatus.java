@@ -14,7 +14,7 @@ public enum SaxStatus {
 	/**
 	 * SUCCESS *
 	 */
-	CONNECTION_CREATED(1.1f, "connection created"), ACCOUNT_CREATED(1.2f, "account created"), LOGIN_SUCCES(1.3f, "login success"), SHARE_PURCHASED(
+	CONNECTION_CREATED(1.1f, "connection created"), ACCOUNT_CREATED(1.2f, "account created"), LOGIN_SUCCES(1.3f, "login success"), SHARE_PURCHASE_SUCCES(
 			1.4f, "share purchased"), SHARE_SOLD(1.5f, "share sold"), MONEY_STORED(1.6f, "money stored"), MONEY_WITHDRAWN(1.7f,
 			"money withdrawn"), DATA_SUCCES(1.8f, "data succes"),
 	/**

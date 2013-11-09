@@ -6,8 +6,11 @@
 package internettech.protocol;
 
 import internettech.json.JSONObject;
+import internettech.manager.ShareManager;
+import internettech.model.Association;
 import internettech.model.SaxResponse;
 import internettech.model.SaxStatus;
+import internettech.model.Share;
 import internettech.model.UserAccount;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -223,6 +226,28 @@ public class SaxProtocolTest {
         assertEquals(expResult.getStatus(), result.getStatus());
     }
     
+    @Test
+    public void testBuyShareSucces() {
+        System.out.println("purchase share");
+        /** Create some dummy shares **/
+        Association ass = new Association("testAss");
+        for(int i = 0; i < 10; i++) {
+            Share share = new Share(ass.getId());
+            assertTrue(share.isForSale());
+            assertEquals(share.getOwnerId(), ass.getId());
+            ShareManager.getInstance().storeShare(share);
+        }
+        String method = "PURCHASE_SHARE";
+        String buyer = testAccount.getId();
+        String seller = ass.getId();
+        int amount = 2;
+        String assId = ass.getId();
+        
+        String input = method + " " + buyer + " "  + seller + " " + assId + " " + amount;
+        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
     
     
 }
