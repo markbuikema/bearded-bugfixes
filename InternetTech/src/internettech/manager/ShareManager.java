@@ -81,7 +81,7 @@ public class ShareManager {
      */
     public boolean transaction(String buyerAccountId, String sellerAccountId, String assId, int amount) {
         List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
-        if (ownerShares.size() > amount) {
+        if (ownerShares.size() >= amount) {
             for (int i = 0; i < amount; i++) {
                 Share share = ownerShares.get(i);
                 share.setForSale(false);
@@ -106,7 +106,7 @@ public class ShareManager {
      */
     public boolean setSharesForSale(String sellerAccountId, String assId, int amount, float price) {
         List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
-        if (ownerShares.size() > amount) {
+        if (ownerShares.size() >= amount) {
             for (int i = 0; i < amount; i++) {
                 Share share = ownerShares.get(i);
                 share.setForSale(true);

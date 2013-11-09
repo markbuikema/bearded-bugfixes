@@ -181,13 +181,35 @@ public final class SaxProtocol {
 
 	private static SaxResponse sellShares(String input, UserAccount user) {
             String[] values = input.split("\\s");
+            if(values.length != 4 || !isValid(values)) {
+                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+            }
             
-            
-            int amount = Integer.parseInt(values[1]);
             String assId = values[2];
-            float price = Float.parseFloat(values[3]);
+            
+            int amount;
+            try {
+            amount = Integer.parseInt(values[1]);
+            } catch (NumberFormatException nf) {
+                return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+            }
+            if(amount <= 0) {
+                return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+            }
+            float price;
+            try {
+                price = Float.parseFloat(values[3]);
+            } catch (NumberFormatException nf) {
+                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+            }
+            if(price <= 0.00f){
+                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+            }
+            
+            
+            
             if(ShareManager.getInstance().setSharesForSale(user.getId(), assId, amount, price)) {
-                return new SaxResponse(SaxStatus.SHARE_SOLD);
+                return new SaxResponse(SaxStatus.SHARE_SELL_SUCCES);
             } 
             return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
         }

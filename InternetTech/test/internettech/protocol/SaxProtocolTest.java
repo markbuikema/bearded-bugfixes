@@ -25,6 +25,8 @@ import static org.junit.Assert.*;
  */
 public class SaxProtocolTest {
 
+    private Association testAssHasSales;
+    private Association testAssHasNoSales;
     private UserAccount testAccount;
     private final float testMoney = 100.0f;
 
@@ -43,14 +45,24 @@ public class SaxProtocolTest {
     public void setUp() {
         String method = "CREATE_ACCOUNT";
         String input = method;
-        SaxResponse expResult = new SaxResponse(SaxStatus.LOGIN_SUCCES);
         SaxResponse accountContent = SaxProtocol.processRequest(input, null);
-
         JSONObject obj = new JSONObject(accountContent.getContent());
         assertNotNull(obj.get("password"));
         assertNotNull(obj.getDouble("money"));
-
         testAccount = new UserAccount(obj.getString("username"), obj.getString("password"), testMoney);
+
+        testAssHasNoSales = new Association("hasNo");
+        testAssHasSales = new Association("hasYes");
+        for (int i = 0; i < 10; i++) {
+            Share share1 = new Share(testAssHasNoSales.getId());
+            Share share2 = new Share(testAssHasSales.getId());
+            Share share3 = new Share(testAssHasSales.getId());
+            share1.setForSale(false);
+            share3.setOwnerId(testAccount.getId());
+            ShareManager.getInstance().storeShare(share1);
+            ShareManager.getInstance().storeShare(share2);
+            ShareManager.getInstance().storeShare(share3);
+        }
     }
 
     @After
@@ -202,7 +214,7 @@ public class SaxProtocolTest {
         assertEquals(expResult.getStatus(), result.getStatus());
         assertTrue(testAccount.getBalance() == balanceAfther);
     }
-    
+
     @Test
     public void testMoneyDepositNoValidMoney() {
         System.out.println("test deposit no money value");
@@ -213,7 +225,7 @@ public class SaxProtocolTest {
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
-    
+
     @Test
     public void testMoneyDepositNegativeAmount() {
         System.out.println("test deposit negative amount");
@@ -225,52 +237,117 @@ public class SaxProtocolTest {
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
-    
+
     @Test
     public void testPurchaseShareSucces() {
-        System.out.println("purchase share");
-        /** Create some dummy shares **/
-        Association ass = new Association("testAss");
-        for(int i = 0; i < 10; i++) {
-            Share share = new Share(ass.getId());
-            assertTrue(share.isForSale());
-            assertEquals(share.getOwnerId(), ass.getId());
-            ShareManager.getInstance().storeShare(share);
-        }
+        System.out.println("test purchase share");
         String method = "PURCHASE_SHARE";
         String buyer = testAccount.getId();
-        String seller = ass.getId();
-        int amount = 2;
-        String assId = ass.getId();
-        
-        String input = method + " " + buyer + " "  + seller + " " + assId + " " + amount;
+        String seller = testAssHasSales.getId();
+        int amount = ShareManager.getInstance().getSharesFromOwnerForSale(testAssHasSales.getId(), testAssHasSales.getId()).size();
+        String assId = testAssHasSales.getId();
+
+        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
         SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
-    
+
     @Test
     public void testPurchaseShareNoSharesForSale() {
-        System.out.println("purchase share, no shares for sale");
-        /** Create some dummy shares **/
-        Association ass = new Association("testAss");
-        for(int i = 0; i < 10; i++) {
-            Share share = new Share(ass.getId());
-            share.setForSale(false);
-            assertEquals(share.getOwnerId(), ass.getId());
-            ShareManager.getInstance().storeShare(share);
-        }
+        System.out.println("test purchase share, no shares for sale");
         String method = "PURCHASE_SHARE";
         String buyer = testAccount.getId();
-        String seller = ass.getId();
+        String seller = testAssHasNoSales.getId();
         int amount = 2;
-        String assId = ass.getId();
-        
-        String input = method + " " + buyer + " "  + seller + " " + assId + " " + amount;
+        String assId = testAssHasNoSales.getId();
+
+        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
         SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+
+    @Test
+    public void testPurchaseNegativeAmount() {
+        System.out.println("test purchase negative amount of shares");
+        String method = "PURCHASE_SHARE";
+        String buyer = testAccount.getId();
+        String seller = testAssHasSales.getId();
+        int amount = -2;
+        String assId = testAssHasSales.getId();
+
+        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
+        SaxResponse expResult = new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+    
+    @Test
+    public void testSellShareSucces() {
+        System.out.println("test sell shares good");
+        String method = "SELL_SHARE";
+        
+        int amount = ShareManager.getInstance().getSharesFromOwner(testAccount.getId(), testAssHasSales.getId()).size();
+        assertTrue(amount > 0);
+        
+        String assId = testAssHasSales.getId();
+        float price = 6.0f;
+        
+        String input = method + " " + amount + " " + assId + " " + price;
+        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_SELL_SUCCES);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+    
+    @Test
+    public void testSellZeroShares() {
+        System.out.println("test sell zero shares");
+        String method = "SELL_SHARE";
+        int amount = 0;
+        String assId = testAssHasSales.getId();
+        float price = 6.0f;
+        
+        String input = method + " " + amount + " " + assId + " " + price;
+        SaxResponse expResult = new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+    
+    @Test
+    public void testSellShareMoreSharesThanOwned() {
+        System.out.println("test sell more shares than owned");
+        String method = "SELL_SHARE";
+        
+        int amount = ShareManager.getInstance().getSharesFromOwner(testAccount.getId(), testAssHasSales.getId()).size() + 1;
+        assertTrue(amount > 0);
+        
+        String assId = testAssHasSales.getId();
+        float price = 6.0f;
+        
+        String input = method + " " + amount + " " + assId + " " + price;
+        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
+        assertEquals(expResult.getStatus(), result.getStatus());
+    }
+    
+    @Test
+    public void testSellSharesForFree() {
+        System.out.println("test sell shares for free");
+        String method = "SELL_SHARE";
+        
+        int amount = ShareManager.getInstance().getSharesFromOwner(testAccount.getId(), testAssHasSales.getId()).size();
+        assertTrue(amount > 0);
+        
+        String assId = testAssHasSales.getId();
+        float price = 0.00f;
+        
+        String input = method + " " + amount + " " + assId + " " + price;
+        SaxResponse expResult = new SaxResponse(SaxStatus.NO_VALID_COMMAND);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
     
     
+
 }
