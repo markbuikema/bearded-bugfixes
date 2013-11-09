@@ -131,6 +131,7 @@ public class ShareManager {
         }
     }
     
+    
     /**
      * Gets all the shares from a user
      * @param ownerId The id of the UserAccount

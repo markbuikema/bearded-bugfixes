@@ -53,7 +53,7 @@ public final class SaxProtocol {
 			case "LOGIN_ACCOUNT":
 				return login(input);
 			default:
-				return new SaxResponse(SaxStatus.UNAUTHORIZED);
+				return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 			}
 		}
 		return null;
@@ -94,9 +94,7 @@ public final class SaxProtocol {
 				return new SaxResponse(SaxStatus.WITHDRAWAL_FAIL);
 			}
 
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
-		} catch (NumberFormatException e) {
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
 
@@ -131,20 +129,13 @@ public final class SaxProtocol {
 
 	private static SaxResponse login(String function) {
 		String[] values = function.split("\\s");
-
-		if (values.length != 3) {
+		if (values.length != 3 || !isValid(values)) {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
 
 		String username = values[1];
 		String password = values[2];
 		Account account = Exchange.getInstance().login(username, password);
-		// try {
-		// account = AccountManager.getInstance().login(username, password);
-		// } catch (SQLException ex) {
-		// Logger.getLogger(SaxProtocol.class.getName()).log(Level.SEVERE, null,
-		// ex);
-		// }
 		if (account != null) {
 			SaxResponse response = new SaxResponse(SaxStatus.LOGIN_SUCCES);
 			response.setContent(account.toString());
@@ -153,6 +144,8 @@ public final class SaxProtocol {
 			return new SaxResponse(SaxStatus.LOGIN_FAIL);
 		}
 	}
+        
+        
 
 	private static SaxResponse purchaseShare(String input, Account user) {
 		String[] values = input.split("\\s");
@@ -181,5 +174,14 @@ public final class SaxProtocol {
                 return new SaxResponse(SaxStatus.SHARE_SOLD);
             } 
             return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
+        }
+        
+        private static boolean isValid(String[] values) {
+            for(String s : values) {
+                if(s.trim().isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
         }
 }

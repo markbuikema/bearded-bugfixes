@@ -29,12 +29,12 @@ public class UserAccount extends Account {
 
     protected void withdraw(float amount) {
         balance = balance - amount;
-        System.out.println("withdraw " + amount + ", new amount: " + balance);
+//        System.out.println("withdraw " + amount + ", new amount: " + balance);
     }
 
     protected void deposit(float amount) {
         balance = balance + amount;
-        System.out.println("deposit " + amount + ", new amount: " + balance);
+//        System.out.println("deposit " + amount + ", new amount: " + balance);
     }
 
     public boolean passwordMatches(String password) {
