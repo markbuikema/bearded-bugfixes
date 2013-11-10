@@ -6,6 +6,7 @@
 package internettech.model;
 
 import internettech.manager.AccountManager;
+import internettech.manager.AssociationManager;
 import internettech.manager.ShareManager;
 
 import java.security.SecureRandom;
@@ -52,13 +53,13 @@ public class Exchange {
 	}
 
 	public Account generateUserAccount() {
-		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), -10.0f);
+		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), 0.0f);
 		AccountManager.getInstance().createUser(account);
 		return account;
 	}
 
-	public boolean shareTransaction(Account buyer, Account seller, Association ass, int amount) {
-		return ShareManager.getInstance().transaction(buyer.getId(), seller.getId(), ass.getId(), amount);
+	public boolean shareTransaction(String buyerId, String sellerId, String assId, int amount) {
+		return ShareManager.getInstance().transaction(buyerId, sellerId, assId, amount);
 	}
 
 	private String generatePassword() {

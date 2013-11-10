@@ -40,7 +40,7 @@ public class AccountManager {
         }
     }
 
-    public final Account retrieveUser(String id)  {
+    public final Account retrieveUserAccount(String id)  {
         for (Account account : accounts) {
             if(account.getId().equals(id)) {
                 return account;
