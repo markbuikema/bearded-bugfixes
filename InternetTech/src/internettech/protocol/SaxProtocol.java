@@ -13,9 +13,10 @@ import internettech.manager.ShareManager;
 import internettech.model.Account;
 import internettech.model.Association;
 import internettech.model.Exchange;
-import internettech.model.SaxResponse;
-import internettech.model.SaxStatus;
+import internettech.model.Share;
 import internettech.model.UserAccount;
+
+import java.util.List;
 
 /**
  * 
@@ -40,7 +41,7 @@ public final class SaxProtocol {
 			case "SELL_SHARE":
 				return sellShare(input, user);
 			case "GET_SHARES":
-				break;
+				return getShares(input);
 			case "GET_ASSOCIATIONS":
 				return getAssociations();
 			default:
@@ -56,7 +57,23 @@ public final class SaxProtocol {
 				return new SaxResponse(SaxStatus.UNAUTHORIZED);
 			}
 		}
-		return null;
+	}
+
+	private static SaxResponse getShares(String input) {
+		SaxResponse response = new SaxResponse(SaxStatus.DATA_SUCCES);
+		String[] f = input.split("\\s");
+
+		try {
+			String assId = f[1];
+			List<Share> shares = ShareManager.getInstance().getSharesFromAss(assId);
+
+			JSONObject object = new JSONObject();
+			JSONArray array = new JSONArray();
+
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+		}
+		return new SaxResponse(SaxStatus.DATA_FAIL);
 	}
 
 	private static SaxResponse getAssociations() {

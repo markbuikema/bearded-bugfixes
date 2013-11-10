@@ -2,8 +2,6 @@ package internettech.client;
 
 import internettech.json.JSONArray;
 import internettech.json.JSONObject;
-import internettech.manager.ShareManager;
-import internettech.model.Association;
 import internettech.model.UserAccount;
 
 import java.io.BufferedReader;
@@ -18,14 +16,14 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 
 public class ExchangeScreen implements Initializable {
 
@@ -75,6 +73,57 @@ public class ExchangeScreen implements Initializable {
 		assIds = new ArrayList<>();
 		populateAssociationList();
 
+		associationList.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event e) {
+				int index = associationList.getSelectionModel().getSelectedIndex();
+				String clickedAssId = assIds.get(index);
+				onAssociationClicked(clickedAssId);
+			}
+		});
+	}
+
+	protected void onAssociationClicked(String clickedAssId) {
+		ObservableList<String> assList = FXCollections.observableArrayList();
+
+		new Thread("Thread-loadShares") {
+			public void run() {
+				String fromServer, fromUser = "GET_ASSOCIATIONS";
+				if (fromUser != null) {
+					System.out.println("Client: \n" + fromUser);
+					out.println(fromUser);
+				}
+				try {
+					if ((fromServer = in.readLine()) != null) {
+						System.out.println("Server: \n" + fromServer);
+						final float statusCode = Float.valueOf(fromServer.split("\\s")[0]);
+						final String content = statusCode == 1.8f ? fromServer.split("content: ")[1] : "";
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								if (statusCode == 1.8f) {
+									JSONObject list = new JSONObject(content);
+									JSONArray associations = list.getJSONArray("associations");
+									for (int i = 0; i < associations.length(); i++) {
+										JSONObject association = associations.getJSONObject(i);
+										addAssociationToList(association.getString("name") + " (" + association.getInt("shareCount")
+												+ " shares for sale)", association.getString("id"));
+									}
+								} else {
+									setStatus("Something went wrong.");
+								}
+							}
+						});
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ArrayIndexOutOfBoundsException e) {
+
+				}
+			}
+		}.start();
+
 	}
 
 	private void populateAssociationList() {
@@ -98,7 +147,7 @@ public class ExchangeScreen implements Initializable {
 									JSONArray associations = list.getJSONArray("associations");
 									for (int i = 0; i < associations.length(); i++) {
 										JSONObject association = associations.getJSONObject(i);
-										addItem(association.getString("name") + " (" + association.getInt("shareCount")
+										addAssociationToList(association.getString("name") + " (" + association.getInt("shareCount")
 												+ " shares for sale)", association.getString("id"));
 									}
 								} else {
@@ -116,7 +165,7 @@ public class ExchangeScreen implements Initializable {
 		}.start();
 	}
 
-	private void addItem(String text, String assId) {
+	private void addAssociationToList(String text, String assId) {
 		list.add(text);
 		assIds.add(assId);
 	}
@@ -220,14 +269,4 @@ public class ExchangeScreen implements Initializable {
 
 	}
 
-	private class AssociationCell extends ListCell<Association> {
-		@Override
-		protected void updateItem(Association item, boolean empty) {
-			super.updateItem(item, empty);
-
-			setTooltip(new Tooltip("Click to see shares from association " + item.getName()));
-			setText(item.getName() + " (" + ShareManager.getInstance().getSharesFromAss(item.getId()).size() + " shares)");
-
-		}
-	}
 }

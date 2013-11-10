@@ -8,10 +8,10 @@ package internettech.server;
 import internettech.json.JSONException;
 import internettech.json.JSONObject;
 import internettech.model.Exchange;
-import internettech.model.SaxResponse;
-import internettech.model.SaxStatus;
 import internettech.model.UserAccount;
 import internettech.protocol.SaxProtocol;
+import internettech.protocol.SaxResponse;
+import internettech.protocol.SaxStatus;
 
 import java.io.BufferedReader;
 import java.io.IOException;
