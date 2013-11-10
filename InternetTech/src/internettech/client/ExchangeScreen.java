@@ -84,12 +84,12 @@ public class ExchangeScreen implements Initializable {
 		});
 	}
 
-	protected void onAssociationClicked(String clickedAssId) {
-		ObservableList<String> assList = FXCollections.observableArrayList();
+	protected void onAssociationClicked(final String clickedAssId) {
 
 		new Thread("Thread-loadShares") {
 			public void run() {
-				String fromServer, fromUser = "GET_ASSOCIATIONS";
+				final ObservableList<String> assList = FXCollections.observableArrayList();
+				String fromServer, fromUser = "GET_SHARES " + clickedAssId;
 				if (fromUser != null) {
 					System.out.println("Client: \n" + fromUser);
 					out.println(fromUser);
@@ -103,15 +103,20 @@ public class ExchangeScreen implements Initializable {
 							@Override
 							public void run() {
 								if (statusCode == 1.8f) {
-									JSONObject list = new JSONObject(content);
-									JSONArray associations = list.getJSONArray("associations");
-									for (int i = 0; i < associations.length(); i++) {
-										JSONObject association = associations.getJSONObject(i);
-										addAssociationToList(association.getString("name") + " (" + association.getInt("shareCount")
-												+ " shares for sale)", association.getString("id"));
-									}
-								} else {
-									setStatus("Something went wrong.");
+									JSONObject obj = new JSONObject(content);
+									final JSONArray shares = obj.getJSONArray("shares");
+									Platform.runLater(new Runnable() {
+										public void run() {
+											for (int i = 0; i < shares.length(); i++) {
+												JSONObject share = shares.getJSONObject(i);
+
+												assList.add(share.getString("ownerName") + " selling " + share.getInt("count")
+														+ " shares for €" + share.getDouble("price") + " each");
+											}
+											associationList.setItems(assList);
+										}
+									});
+
 								}
 							}
 						});

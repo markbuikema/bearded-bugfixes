@@ -8,6 +8,7 @@ package internettech.protocol;
 import internettech.json.JSONArray;
 import internettech.json.JSONException;
 import internettech.json.JSONObject;
+import internettech.manager.AccountManager;
 import internettech.manager.AssociationManager;
 import internettech.manager.ShareManager;
 import internettech.model.Account;
@@ -69,11 +70,46 @@ public final class SaxProtocol {
 
 			JSONObject object = new JSONObject();
 			JSONArray array = new JSONArray();
-
+			for (Share s : shares) {
+				boolean ownerExists = false;
+				for (int i = 0; i < array.length(); i++) {
+					JSONObject o = array.getJSONObject(i);
+					if (o.getString("ownerId").equals(s.getOwnerId())) {
+						ownerExists = true;
+						int count = o.getInt("count");
+						o.put("count", count + 1);
+						break;
+					}
+				}
+				if (!ownerExists) {
+					String accountName = null;
+					for (Account account : AccountManager.getInstance().getUserAccounts()) {
+						if (account.getId().equals(s.getOwnerId())) {
+							accountName = account.getName();
+							break;
+						}
+					}
+					if (accountName == null)
+						for (Association a : AssociationManager.getInstance().getAssociations()) {
+							if (a.getId().equals(s.getOwnerId())) {
+								accountName = a.getName();
+								break;
+							}
+						}
+					JSONObject newOwner = new JSONObject();
+					newOwner.put("ownerName", accountName);
+					newOwner.put("ownerId", s.getOwnerId());
+					newOwner.put("count", 1);
+					newOwner.put("price", s.getPrice());
+					array.put(newOwner);
+				}
+			}
+			object.put("shares", array);
+			response.setContent(object.toString());
+			return response;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
-		return new SaxResponse(SaxStatus.DATA_FAIL);
 	}
 
 	private static SaxResponse getAssociations() {
@@ -161,82 +197,78 @@ public final class SaxProtocol {
 			return new SaxResponse(SaxStatus.LOGIN_FAIL);
 		}
 	}
-        
-        
 
 	private static SaxResponse purchaseShare(String input, Account user) {
 		String[] values = input.split("\\s");
-                /** Only continue if valid values **/
-                if(values.length != 5 || !isValid(values)){
-                    return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
-                }
-                
-		String buyerId = values[1];  
-                String seller = values[2];
-                String assId = values [3];
-                
-                int amount;
-                try {
-                amount = Integer.parseInt(values[4]);
-                } catch (NumberFormatException nf) {
-                    return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-                }
-                if(amount <= 0) {
-                    return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-                }
-                
-                /** Only continue if buyer == user **/
-                if(!buyerId.equals(user.getId())) {
-                    return new SaxResponse(SaxStatus.UNAUTHORIZED);
-                }
+		/** Only continue if valid values **/
+		if (values.length != 5 || !isValid(values)) {
+			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+		}
 
-                if(Exchange.getInstance().shareTransaction(buyerId, seller, assId, amount)){
-                    return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
-                }
+		String buyerId = values[1];
+		String seller = values[2];
+		String assId = values[3];
+
+		int amount;
+		try {
+			amount = Integer.parseInt(values[4]);
+		} catch (NumberFormatException nf) {
+			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+		}
+		if (amount <= 0) {
+			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+		}
+
+		/** Only continue if buyer == user **/
+		if (!buyerId.equals(user.getId())) {
+			return new SaxResponse(SaxStatus.UNAUTHORIZED);
+		}
+
+		if (Exchange.getInstance().shareTransaction(buyerId, seller, assId, amount)) {
+			return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+		}
 		return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
 	}
 
 	private static SaxResponse sellShares(String input, UserAccount user) {
-            String[] values = input.split("\\s");
-            if(values.length != 4 || !isValid(values)) {
-                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
-            }
-            
-            String assId = values[2];
-            
-            int amount;
-            try {
-            amount = Integer.parseInt(values[1]);
-            } catch (NumberFormatException nf) {
-                return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-            }
-            if(amount <= 0) {
-                return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-            }
-            float price;
-            try {
-                price = Float.parseFloat(values[3]);
-            } catch (NumberFormatException nf) {
-                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
-            }
-            if(price <= 0.00f){
-                return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
-            }
-            
-            
-            
-            if(ShareManager.getInstance().setSharesForSale(user.getId(), assId, amount, price)) {
-                return new SaxResponse(SaxStatus.SHARE_SELL_SUCCES);
-            } 
-            return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
-        }
-        
-        private static boolean isValid(String[] values) {
-            for(String s : values) {
-                if(s.trim().isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
-        }
+		String[] values = input.split("\\s");
+		if (values.length != 4 || !isValid(values)) {
+			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+		}
+
+		String assId = values[2];
+
+		int amount;
+		try {
+			amount = Integer.parseInt(values[1]);
+		} catch (NumberFormatException nf) {
+			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+		}
+		if (amount <= 0) {
+			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+		}
+		float price;
+		try {
+			price = Float.parseFloat(values[3]);
+		} catch (NumberFormatException nf) {
+			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+		}
+		if (price <= 0.00f) {
+			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+		}
+
+		if (ShareManager.getInstance().setSharesForSale(user.getId(), assId, amount, price)) {
+			return new SaxResponse(SaxStatus.SHARE_SELL_SUCCES);
+		}
+		return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
+	}
+
+	private static boolean isValid(String[] values) {
+		for (String s : values) {
+			if (s.trim().isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
