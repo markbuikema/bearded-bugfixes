@@ -17,6 +17,8 @@ import internettech.model.Exchange;
 import internettech.model.ShareItem;
 import internettech.model.UserAccount;
 
+import java.util.List;
+
 /**
  *
  * @author Christian
