@@ -36,6 +36,10 @@ public class UserAccount extends Account {
         balance = balance + amount;
 //        System.out.println("deposit " + amount + ", new amount: " + balance);
     }
+    
+    public void setBalance(float balance) {
+        this.balance = balance;
+    }
 
     public boolean passwordMatches(String password) {
         return this.password.equals(password);
@@ -48,6 +52,7 @@ public class UserAccount extends Account {
     @Override
     public String toString() {
         JSONObject account = new JSONObject();
+        account.put("id", id);
         account.put("username", name);
         account.put("password", password);
         account.put("money", balance);

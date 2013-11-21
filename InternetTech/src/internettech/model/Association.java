@@ -13,9 +13,18 @@ import java.util.UUID;
  * @author Christian
  */
 public class Association extends Account {
+    private float balance = 3000000;
     
     public Association(String name) {
         super(name);
         id = UUID.randomUUID().toString();
+    }
+
+    public float getBalance() {
+        return balance;
+    }
+
+    public void setBalance(float balance) {
+        this.balance = balance;
     }
 }

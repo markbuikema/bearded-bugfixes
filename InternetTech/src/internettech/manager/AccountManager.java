@@ -40,13 +40,21 @@ public class AccountManager {
         }
     }
 
-    public final Account retrieveUserAccount(String id)  {
-        for (Account account : accounts) {
+    public final UserAccount retrieveUserAccount(String id)  {
+        for (UserAccount account : accounts) {
             if(account.getId().equals(id)) {
                 return account;
             }
         }
         return null;
+    }
+    
+     public void saveAccount(UserAccount account) {
+        for(int i = 0; i < accounts.size(); i++) {
+            if(accounts.get(i).getId().equals(account.getId())){
+                accounts.set(i, account);
+            }
+        }
     }
 
     public final Account login(String username, String password)  {

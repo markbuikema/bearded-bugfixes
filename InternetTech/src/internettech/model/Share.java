@@ -15,20 +15,30 @@ public class Share {
 
     private final String id;
     private final String assId;
+    private String ownerName;
     private String accId;
 
     private float price = 5.0f;
     private boolean forSale = true;
 
-    public Share(String assId) {
-        /**
-         * Initially association is the owner *
-         */
+    public Share(String assId, String ownerName) {
+
         this.accId = assId;
         this.assId = assId;
+        this.ownerName = ownerName;
         id = UUID.randomUUID().toString();
     }
 
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    
+    
     public String getOwnerId() {
         return accId;
     }

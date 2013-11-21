@@ -5,7 +5,11 @@
  */
 package internettech.manager;
 
+import internettech.model.Account;
+import internettech.model.Association;
 import internettech.model.Share;
+import internettech.model.ShareItem;
+import internettech.model.UserAccount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +65,18 @@ public class ShareManager {
      */
     public List<Share> getSharesFromAss(String assId) {
         List<Share> assShare = new ArrayList<>();
-        for(Share share : shares) {
-            if(share.getAssociationId().equals(assId)) {
+        for (Share share : shares) {
+            if (share.getAssociationId().equals(assId)) {
+                assShare.add(share);
+            }
+        }
+        return assShare;
+    }
+    
+    public List<Share> getSharesFromAssForSale(String assId) {
+        List<Share> assShare = new ArrayList<>();
+        for (Share share : shares) {
+            if (share.getAssociationId().equals(assId) && share.isForSale()) {
                 assShare.add(share);
             }
         }
@@ -81,7 +95,29 @@ public class ShareManager {
      */
     public boolean transaction(String buyerAccountId, String sellerAccountId, String assId, int amount) {
         List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
-        if (ownerShares.size() >= amount) {
+        UserAccount buyer = AccountManager.getInstance().retrieveUserAccount(buyerAccountId);
+        Account seller = AccountManager.getInstance().retrieveUserAccount(sellerAccountId);
+        if(seller == null) {
+            seller = AssociationManager.getInstance().retrieve(assId);
+        }
+        
+        if (ownerShares.size() >= amount && (buyer.getBalance() >= (amount * getPrice(sellerAccountId, assId)))) {
+            float price = amount * getPrice(sellerAccountId, assId);
+            
+            /** Pay **/
+            buyer.setBalance(buyer.getBalance() - price);
+            AccountManager.getInstance().saveAccount(buyer);
+            
+            /** Profit **/
+            if(seller instanceof UserAccount) {
+                UserAccount user = (UserAccount) seller;
+                user.setBalance(user.getBalance() + price);
+            } else {
+                Association ass = (Association) seller;
+                ass.setBalance(ass.getBalance() + price);
+            }
+            
+            /** Deliver **/
             for (int i = 0; i < amount; i++) {
                 Share share = ownerShares.get(i);
                 share.setForSale(false);
@@ -94,6 +130,10 @@ public class ShareManager {
         return false;
     }
     
+    private float getPrice(String ownerId, String assID) {
+        return getSharesFromOwnerForSale(ownerId, assID).get(0).getPrice();
+    }
+
     /**
      * Transacts an amount of shares between two users from an specific
      * association.
@@ -130,10 +170,10 @@ public class ShareManager {
             }
         }
     }
-    
-    
+
     /**
      * Gets all the shares from a user
+     *
      * @param ownerId The id of the UserAccount
      * @return List of shares from an user
      */
@@ -147,8 +187,11 @@ public class ShareManager {
         return assShare;
     }
     
-        /**
+   
+
+    /**
      * Gets all the shares from a user from a specific association
+     *
      * @param ownerId The id of the UserAccount
      * @param assId The id of the association
      * @return List of shares from an user
@@ -164,17 +207,41 @@ public class ShareManager {
         return assShare;
     }
 
+    public List<ShareItem> getSeperatedSharesFrom(String assId) {
+        List<ShareItem> result = new ArrayList<>();
+        for (Share shareA : getSharesFromAss(assId)) {
+            if (shareA.isForSale()) {
+                System.out.println(shareA.toString());
+                boolean contains = false;
+                for (int i = 0; i < result.size(); i++) {
+                    if (result.get(i).getOwnerId().equals(shareA.getOwnerId())) {
+                        contains = true;
+                        result.get(i).setAmount(result.get(i).getAmount() + 1);
+                        break;
+                    }
+                }
+                if (!contains) {
+                    result.add(new ShareItem(shareA.getOwnerId(), shareA.getOwnerName(), shareA.getPrice(), 1));
+                }
+            }
+        }
+        System.out.println(result.size());
+        return result;
+    }
+
     /**
      * Gets all the shares for sale from a user
+     *
      * @param ownerId The id of the UserAccount that owns the share
      * @param assId The association id
-     * @return List of shares that are for sale from a specific user and association
+     * @return List of shares that are for sale from a specific user and
+     * association
      */
     public List<Share> getSharesFromOwnerForSale(String ownerId, String assId) {
         List<Share> assShare = new ArrayList<>();
         for (Share share : shares) {
-            if (share.isForSale() 
-                    && share.getOwnerId().equals(ownerId) 
+            if (share.isForSale()
+                    && share.getOwnerId().equals(ownerId)
                     && share.getAssociationId().equals(assId)) {
                 assShare.add(share);
             }

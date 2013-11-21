@@ -8,13 +8,13 @@ package internettech.protocol;
 import internettech.json.JSONArray;
 import internettech.json.JSONException;
 import internettech.json.JSONObject;
+import internettech.manager.AccountManager;
 import internettech.manager.AssociationManager;
 import internettech.manager.ShareManager;
 import internettech.model.Account;
 import internettech.model.Association;
 import internettech.model.Exchange;
-import internettech.model.SaxResponse;
-import internettech.model.SaxStatus;
+import internettech.model.ShareItem;
 import internettech.model.UserAccount;
 
 /**
@@ -39,12 +39,14 @@ public final class SaxProtocol {
                     return purchaseShare(input, user);
                 case "SELL_SHARE":
                     return sellShares(input, user);
-                case "GET_SHARES":
-                    break;
+                case "BALANCE":
+                    return getBalance(input, user);
                 case "GET_ASSOCIATIONS":
                     return getAssociations(user);
                 case "GET_USER_SHARES":
                     return getSharesOfUser(user);
+                case "GET_ASSOCIATION_SHARES":
+                    return getSharesFromAss(input,user);
                 default:
                     return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
             }
@@ -58,7 +60,59 @@ public final class SaxProtocol {
                     return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
             }
         }
-        return null;
+    }
+    
+    private static SaxResponse getBalance(String input, UserAccount account) {
+        String[] values = input.split("\\s");
+        if(values.length != 2) {
+            return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+        }
+        String accountId = values[1];
+        if(!account.getId().equals(accountId)){
+            return new SaxResponse(SaxStatus.UNAUTHORIZED);
+        }
+        float balance = AccountManager.getInstance().retrieveUserAccount(accountId).getBalance();
+         try {
+            SaxResponse response = new SaxResponse(SaxStatus.DATA_SUCCES);
+            JSONObject object = new JSONObject();
+            object.put("id", account.getId());  
+            object.put("name", account.getName());
+            object.put("balance", balance);
+            response.setContent(object.toString());
+            return response;
+        } catch (JSONException e) {
+            return new SaxResponse(SaxStatus.DATA_FAIL);
+        }
+        
+    }
+    
+    private static SaxResponse getSharesFromAss(String input, UserAccount account) {
+        String[] values = input.split("\\s");
+        
+        if(values.length != 2){
+            return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
+        }
+        
+        String assId = values[1];
+        try {
+            SaxResponse response = new SaxResponse(SaxStatus.DATA_SUCCES);
+            JSONObject root = new JSONObject();
+            JSONArray array = new JSONArray();
+            for (ShareItem item : ShareManager.getInstance().getSeperatedSharesFrom(assId)) {
+                JSONObject object = new JSONObject();
+                object.put("id", item.getOwnerId());
+                object.put("name", item.getOwnerName());
+                object.put("shareSaleCount", item.getAmount());
+                object.put("price", item.getPrice());
+                array.put(object);
+            }
+
+            root.put("shareItems", array);
+            response.setContent(root.toString());
+            return response;
+        } catch (JSONException e) {
+            return new SaxResponse(SaxStatus.DATA_FAIL);
+        }
     }
 
     private static SaxResponse getSharesOfUser(UserAccount account) {
@@ -93,7 +147,6 @@ public final class SaxProtocol {
 
     private static SaxResponse getAssociations(UserAccount account) {
         String yourId = account.getId();
-        String yourName = account.getName();
         String yourShareCount = String.valueOf(ShareManager.getInstance().getSharesFromOwner(yourId).size());
         JSONObject you = new JSONObject();
         you.put("id", account.getId());
@@ -108,7 +161,7 @@ public final class SaxProtocol {
                 JSONObject ass = new JSONObject();
                 ass.put("id", a.getId());
                 ass.put("name", a.getName());
-                ass.put("shareCount", ShareManager.getInstance().getSharesFromAss(a.getId()).size());
+                ass.put("shareCount", ShareManager.getInstance().getSharesFromAssForSale(a.getId()).size());
                 array.put(ass);
             }
 
@@ -219,6 +272,8 @@ public final class SaxProtocol {
 
         if (Exchange.getInstance().shareTransaction(buyerId, seller, assId, amount)) {
             return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+        } else if(ShareManager.getInstance().getSharesFromOwnerForSale(seller, assId).size() < amount){
+            return new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);
         }
         return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
     }
@@ -252,7 +307,7 @@ public final class SaxProtocol {
 
         if (ShareManager.getInstance().setSharesForSale(user.getId(), assId, amount, price)) {
             return new SaxResponse(SaxStatus.SHARE_SELL_SUCCES);
-        }
+        } 
         return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
     }
 

@@ -26,14 +26,14 @@ public class AssociationManager {
 		createAssociations();
 	}
 
-	public void createAssociations() {
+	public final void createAssociations() {
 		asses.add(new Association("Syntaxis"));
 		asses.add(new Association("Link"));
 		asses.add(new Association("Watt"));
 
 		for (Association a : asses) {
 			for (int i = 0; i < 5000; i++)
-				ShareManager.getInstance().storeShare(new Share(a.getId()));
+				ShareManager.getInstance().storeShare(new Share(a.getId(),  a.getName()));
 		}
 
 		System.out.println("Associations created.");
@@ -63,4 +63,12 @@ public class AssociationManager {
 		return Collections.unmodifiableList(asses);
 	}
 
+        public void save(Association ass) {
+            for(int i = 0; i < asses.size(); i++) {
+                if(asses.get(i).getId().equals(ass.getId())){
+                    asses.set(i, ass);
+                }
+            }
+        }
+        
 }

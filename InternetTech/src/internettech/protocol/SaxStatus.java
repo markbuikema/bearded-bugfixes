@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package internettech.model;
+package internettech.protocol;
 
 /**
  * 
@@ -23,6 +23,7 @@ public enum SaxStatus {
 	NO_MORE_ACCOUNTS(2.1f, "no more accounts available"), LOGIN_FAIL(2.2f, "login fail: incorrect credentials"), SHARE_PURCHASE_FAIL(2.3f,
 			"insufficient funds"), SHARE_SALE_FAIL(2.4f, "share not found"), WITHDRAWAL_FAIL(2.5f, "insufficient funds"), DEPOSIT_FAIL(
 			2.6f, "amount too much"), DATA_FAIL(2.7f, "could not find the requested data"), NO_VALID_AMOUNT(2.8f,"no valid amount was given"),
+                        NOT_ENOUGH_SHARES(2.9f, "not enough shares in stock"),
 	/**
 	 * COMMAND FAILED *
 	 */

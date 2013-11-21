@@ -6,10 +6,11 @@
 package internettech.protocol;
 
 import internettech.json.JSONObject;
+import internettech.manager.AccountManager;
 import internettech.manager.ShareManager;
 import internettech.model.Association;
-import internettech.model.SaxResponse;
-import internettech.model.SaxStatus;
+import internettech.protocol.SaxResponse;
+import internettech.protocol.SaxStatus;
 import internettech.model.Share;
 import internettech.model.UserAccount;
 import org.junit.After;
@@ -49,14 +50,14 @@ public class SaxProtocolTest {
         JSONObject obj = new JSONObject(accountContent.getContent());
         assertNotNull(obj.get("password"));
         assertNotNull(obj.getDouble("money"));
+        assertNotNull(obj.get("id"));
         testAccount = new UserAccount(obj.getString("username"), obj.getString("password"), testMoney);
-
         testAssHasNoSales = new Association("hasNo");
         testAssHasSales = new Association("hasYes");
         for (int i = 0; i < 10; i++) {
-            Share share1 = new Share(testAssHasNoSales.getId());
-            Share share2 = new Share(testAssHasSales.getId());
-            Share share3 = new Share(testAssHasSales.getId());
+            Share share1 = new Share(testAssHasNoSales.getId(), testAssHasNoSales.getName());
+            Share share2 = new Share(testAssHasSales.getId(), testAssHasSales.getName());
+            Share share3 = new Share(testAssHasSales.getId(), testAssHasSales.getName());
             share1.setForSale(false);
             share3.setOwnerId(testAccount.getId());
             ShareManager.getInstance().storeShare(share1);
@@ -239,21 +240,6 @@ public class SaxProtocolTest {
     }
 
     @Test
-    public void testPurchaseShareSucces() {
-        System.out.println("test purchase share");
-        String method = "PURCHASE_SHARE";
-        String buyer = testAccount.getId();
-        String seller = testAssHasSales.getId();
-        int amount = ShareManager.getInstance().getSharesFromOwnerForSale(testAssHasSales.getId(), testAssHasSales.getId()).size();
-        String assId = testAssHasSales.getId();
-
-        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
-        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
-        SaxResponse result = SaxProtocol.processRequest(input, testAccount);
-        assertEquals(expResult.getStatus(), result.getStatus());
-    }
-
-    @Test
     public void testPurchaseShareNoSharesForSale() {
         System.out.println("test purchase share, no shares for sale");
         String method = "PURCHASE_SHARE";
@@ -263,7 +249,7 @@ public class SaxProtocolTest {
         String assId = testAssHasNoSales.getId();
 
         String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
-        SaxResponse expResult = new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
+        SaxResponse expResult = new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }

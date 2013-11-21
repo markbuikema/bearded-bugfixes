@@ -53,7 +53,7 @@ public class Exchange {
 	}
 
 	public Account generateUserAccount() {
-		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), 0.0f);
+		UserAccount account = new UserAccount(unusedUsernames.pop(), generatePassword(), 0.00f);
 		AccountManager.getInstance().createUser(account);
 		return account;
 	}
