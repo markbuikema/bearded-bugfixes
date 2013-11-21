@@ -62,7 +62,8 @@ public class ExchangeScreen implements Initializable {
 	@FXML
 	private ListView<String> associationList;
 
-	private ObservableList<String> list;
+	@FXML
+	private Button backButton;
 
 	public ExchangeScreen(UserAccount acc, PrintWriter out, BufferedReader in) {
 		this.account = acc;
@@ -75,9 +76,6 @@ public class ExchangeScreen implements Initializable {
 		usernameText.setText(account.getName());
 		moneyText.setText(Float.toString(account.getBalance()));
 
-		list = FXCollections.observableArrayList();
-		associationList.setItems(list);
-
 		assIds = new ArrayList<>();
 		assNames = new ArrayList<>();
 		populateAssociationList();
@@ -87,6 +85,9 @@ public class ExchangeScreen implements Initializable {
 			@Override
 			public void handle(Event e) {
 				int index = associationList.getSelectionModel().getSelectedIndex();
+
+				if (index < 0)
+					return;
 
 				if (shareArgs == null) {
 					String clickedAssId = assIds.get(index);
@@ -110,6 +111,7 @@ public class ExchangeScreen implements Initializable {
 				}
 			}
 		});
+
 	}
 
 	protected void onAssociationClicked(final String clickedAssId, final String clickedAssName) {
@@ -140,7 +142,7 @@ public class ExchangeScreen implements Initializable {
 												JSONObject share = shares.getJSONObject(i);
 
 												assList.add(share.getString("ownerName") + " selling " + share.getInt("count")
-														+ " shares for €" + share.getDouble("price") + " each");
+														+ " shares for EUR" + share.getDouble("price") + " each");
 
 												JSONObject b = new JSONObject();
 												b.put("ownerId", share.getString("ownerId"));
@@ -152,7 +154,7 @@ public class ExchangeScreen implements Initializable {
 												shareArgs.add(b);
 											}
 											associationList.setItems(assList);
-
+											backButton.setVisible(true);
 										}
 									});
 
@@ -171,6 +173,9 @@ public class ExchangeScreen implements Initializable {
 	}
 
 	private void populateAssociationList() {
+		assIds.clear();
+		assNames.clear();
+		final ObservableList<String> oList = FXCollections.observableArrayList();
 		new Thread("Thread-loadAssociations") {
 			public void run() {
 				String fromServer, fromUser = "GET_ASSOCIATIONS";
@@ -191,9 +196,14 @@ public class ExchangeScreen implements Initializable {
 									JSONArray associations = list.getJSONArray("associations");
 									for (int i = 0; i < associations.length(); i++) {
 										JSONObject association = associations.getJSONObject(i);
-										addAssociationToList(association.getString("name") + " (" + association.getInt("shareCount")
-												+ " shares for sale)", association.getString("id"), association.getString("name"));
+										if (association.getInt("shareCount") > 0) {
+											addAssociationToList(oList,
+													association.getString("name") + " (" + association.getInt("shareCount")
+															+ " shares for sale)", association.getString("id"),
+													association.getString("name"));
+										}
 									}
+									associationList.setItems(oList);
 								} else {
 									setStatus("Something went wrong.");
 								}
@@ -209,7 +219,7 @@ public class ExchangeScreen implements Initializable {
 		}.start();
 	}
 
-	private void addAssociationToList(String text, String assId, String assName) {
+	private void addAssociationToList(ObservableList<String> list, String text, String assId, String assName) {
 		list.add(text);
 		assIds.add(assId);
 		assNames.add(assName);
@@ -283,7 +293,6 @@ public class ExchangeScreen implements Initializable {
 							}
 						});
 					}
-
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -314,6 +323,13 @@ public class ExchangeScreen implements Initializable {
 			}
 		}.start();
 
+	}
+
+	@FXML
+	private void onBackPressed(ActionEvent e) {
+		backButton.setVisible(false);
+		shareArgs = null;
+		populateAssociationList();
 	}
 
 }
