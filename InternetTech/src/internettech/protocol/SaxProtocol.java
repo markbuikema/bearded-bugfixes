@@ -242,13 +242,12 @@ public final class SaxProtocol {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
 
-		String buyerId = values[1];
-		String seller = values[2];
-		String assId = values[3];
+		String seller = values[1];
+		String assId = values[2];
 
 		int amount;
 		try {
-			amount = Integer.parseInt(values[4]);
+			amount = Integer.parseInt(values[3]);
 		} catch (NumberFormatException nf) {
 			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
 		}
@@ -256,14 +255,7 @@ public final class SaxProtocol {
 			return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
 		}
 
-		/**
-		 * Only continue if buyer == user *
-		 */
-		if (!buyerId.equals(user.getId())) {
-			return new SaxResponse(SaxStatus.UNAUTHORIZED);
-		}
-
-		if (Exchange.getInstance().shareTransaction(buyerId, seller, assId, amount)) {
+		if (Exchange.getInstance().shareTransaction(user.getId(), seller, assId, amount)) {
 			return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
 		} else if (ShareManager.getInstance().getSharesFromOwnerForSale(seller, assId).size() < amount) {
 			return new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);

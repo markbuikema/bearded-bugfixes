@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="323.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <TextField fx:id="amountInput" layoutX="162.0" layoutY="92.0" prefHeight="25.0" prefWidth="80.0" />
+    <Label fx:id="dialogTitle" alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="78.0" prefWidth="295.0" text="Buy shares in x from y">
+      <font>
+        <Font size="24.0" />
+      </font>
+    </Label>
+    <Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="92.0" prefHeight="25.0" prefWidth="134.0" text="Amount" />
+    <Button layoutX="14.0" layoutY="162.0" mnemonicParsing="false" onAction="#onCancelClick" prefWidth="134.0" text="Cancel" />
+    <Button layoutX="162.0" layoutY="162.0" mnemonicParsing="false" onAction="#onConfirmClick" prefWidth="134.0" text="OK" />
+    <Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="127.0" prefWidth="134.0" text="Cost" />
+    <Label fx:id="costText" layoutX="162.0" layoutY="124.0" prefHeight="21.0" prefWidth="134.0" text="Label" />
+  </children>
+</AnchorPane>

@@ -19,11 +19,16 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ExchangeScreen implements Initializable {
 
@@ -32,6 +37,9 @@ public class ExchangeScreen implements Initializable {
 	private BufferedReader in;
 	private int threadID;
 	private List<String> assIds;
+	private List<String> assNames;
+
+	private List<JSONObject> shareArgs;
 
 	@FXML
 	private Label usernameText;
@@ -71,6 +79,7 @@ public class ExchangeScreen implements Initializable {
 		associationList.setItems(list);
 
 		assIds = new ArrayList<>();
+		assNames = new ArrayList<>();
 		populateAssociationList();
 
 		associationList.setOnMouseClicked(new EventHandler<Event>() {
@@ -78,13 +87,32 @@ public class ExchangeScreen implements Initializable {
 			@Override
 			public void handle(Event e) {
 				int index = associationList.getSelectionModel().getSelectedIndex();
-				String clickedAssId = assIds.get(index);
-				onAssociationClicked(clickedAssId);
+
+				if (shareArgs == null) {
+					String clickedAssId = assIds.get(index);
+					String clickedAssName = assNames.get(index);
+					onAssociationClicked(clickedAssId, clickedAssName);
+				} else {
+					try {
+
+						FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_buy_dialog.fxml"));
+						loader.setController(new BuyDialogController(shareArgs.get(index), account));
+						Parent root = (Parent) loader.load();
+						Scene scene = new Scene(root);
+						Stage dialog = new Stage();
+						dialog.setResizable(false);
+						dialog.initStyle(StageStyle.UTILITY);
+						dialog.setScene(scene);
+						dialog.show();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
 		});
 	}
 
-	protected void onAssociationClicked(final String clickedAssId) {
+	protected void onAssociationClicked(final String clickedAssId, final String clickedAssName) {
 
 		new Thread("Thread-loadShares") {
 			public void run() {
@@ -107,13 +135,24 @@ public class ExchangeScreen implements Initializable {
 									final JSONArray shares = obj.getJSONArray("shares");
 									Platform.runLater(new Runnable() {
 										public void run() {
+											shareArgs = new ArrayList<>();
 											for (int i = 0; i < shares.length(); i++) {
 												JSONObject share = shares.getJSONObject(i);
 
 												assList.add(share.getString("ownerName") + " selling " + share.getInt("count")
 														+ " shares for €" + share.getDouble("price") + " each");
+
+												JSONObject b = new JSONObject();
+												b.put("ownerId", share.getString("ownerId"));
+												b.put("ownerName", share.getString("ownerName"));
+												b.put("associationId", clickedAssId);
+												b.put("associationName", clickedAssName);
+												b.put("maxCount", share.getInt("count"));
+												b.put("price", share.getDouble("price"));
+												shareArgs.add(b);
 											}
 											associationList.setItems(assList);
+
 										}
 									});
 
@@ -153,7 +192,7 @@ public class ExchangeScreen implements Initializable {
 									for (int i = 0; i < associations.length(); i++) {
 										JSONObject association = associations.getJSONObject(i);
 										addAssociationToList(association.getString("name") + " (" + association.getInt("shareCount")
-												+ " shares for sale)", association.getString("id"));
+												+ " shares for sale)", association.getString("id"), association.getString("name"));
 									}
 								} else {
 									setStatus("Something went wrong.");
@@ -170,9 +209,10 @@ public class ExchangeScreen implements Initializable {
 		}.start();
 	}
 
-	private void addAssociationToList(String text, String assId) {
+	private void addAssociationToList(String text, String assId, String assName) {
 		list.add(text);
 		assIds.add(assId);
+		assNames.add(assName);
 	}
 
 	@FXML
@@ -195,6 +235,7 @@ public class ExchangeScreen implements Initializable {
 								if (statusCode == 1.7f) {
 									JSONObject user = new JSONObject(content);
 									moneyText.setText(Double.toString(user.getDouble("money")));
+									account.setBalance((float) user.getDouble("money"));
 									setStatus("Money withdrawn");
 								} else if (statusCode == 2.5f) {
 									setStatus("Insufficient funds!");
@@ -233,6 +274,7 @@ public class ExchangeScreen implements Initializable {
 								if (statusCode == 1.6f) {
 									JSONObject user = new JSONObject(content);
 									moneyText.setText(Double.toString(user.getDouble("money")));
+									account.setBalance((float) user.getDouble("money"));
 									setStatus("Money stored");
 								} else if (statusCode == 2.6f)
 									setStatus("Amount too much.");
