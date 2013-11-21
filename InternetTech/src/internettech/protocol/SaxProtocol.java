@@ -16,6 +16,7 @@ import internettech.model.Association;
 import internettech.model.Exchange;
 import internettech.model.Share;
 import internettech.model.UserAccount;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -47,6 +48,8 @@ public final class SaxProtocol {
 				return getAssociations(user);
 			case "GET_SHARES":
 				return getShares(input);
+                        case "GET_USERSHARES":
+                                return getUserShares(user);
 			default:
 				return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 			}
@@ -295,6 +298,30 @@ public final class SaxProtocol {
 		}
 		return new SaxResponse(SaxStatus.SHARE_SALE_FAIL);
 	}
+        
+            private static SaxResponse getUserShares(UserAccount you) {
+            
+                SaxResponse response = new SaxResponse(SaxStatus.DATA_SUCCES);
+			JSONObject root = new JSONObject();
+			JSONArray array = new JSONArray();
+			
+			for (Association a : AssociationManager.getInstance().getAssociations()) {
+				JSONObject owned = new JSONObject();
+                                JSONObject forSale = new JSONObject();
+                                        ShareManager.getInstance().getSharesFromAss(a.getId()).size();
+                                
+			}
+
+			root.put("associations", array);
+			response.setContent(root.toString());
+                        return response;
+                
+                
+                
+                
+                
+                
+            }
 
 	private static boolean isValid(String[] values) {
 		for (String s : values) {

@@ -21,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -58,7 +59,7 @@ public class ExchangeScreen implements Initializable {
 
 	@FXML
 	private Button withdrawButton;
-
+        
 	@FXML
 	private ListView<String> associationList;
 
@@ -331,5 +332,22 @@ public class ExchangeScreen implements Initializable {
 		shareArgs = null;
 		populateAssociationList();
 	}
+        
+        @FXML
+        private void mySharesPressed(ActionEvent event) {
+            Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_shareoverview.fxml"));
+			loader.setController(new ShareOverViewController(account, out, in));
+			root = (Parent) loader.load();
+			Stage stage = new Stage();
+			stage.setTitle("My Shares");
+			stage.setResizable(false);
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        }
 
 }

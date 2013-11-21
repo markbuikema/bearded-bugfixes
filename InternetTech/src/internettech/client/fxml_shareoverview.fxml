@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <ToolBar GridPane.columnIndex="0" GridPane.rowIndex="0">
+      <items>
+        <Button mnemonicParsing="false" prefWidth="48.0" text="&lt;" />
+      </items>
+    </ToolBar>
+    <TitledPane alignment="CENTER" animated="false" collapsible="false" contentDisplay="CENTER" text="" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="2">
+      <content>
+        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      </content>
+    </TitledPane>
+    <BarChart fx:id="shareBarChart" alternativeColumnFillVisible="false" alternativeRowFillVisible="true" animated="true" horizontalGridLinesVisible="true" horizontalZeroLineVisible="true" prefHeight="322.0" prefWidth="640.0" title="Owned Shares" verticalGridLinesVisible="true" verticalZeroLineVisible="true" GridPane.columnIndex="0" GridPane.rowIndex="1">
+      <xAxis>
+        <CategoryAxis side="BOTTOM" />
+      </xAxis>
+      <yAxis>
+        <NumberAxis side="LEFT" />
+      </yAxis>
+    </BarChart>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="24.0" minHeight="10.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="120.0" minHeight="10.0" prefHeight="120.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+</GridPane>
