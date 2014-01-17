@@ -103,25 +103,35 @@ public class ShareManager {
 	public boolean transaction(String buyerAccountId, String sellerAccountId, String assId, int amount) {
 		List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
 		UserAccount buyer = AccountManager.getInstance().retrieveUserAccount(buyerAccountId);
-		Account seller = AccountManager.getInstance().retrieveUserAccount(sellerAccountId);
-		if (seller == null) {
-			seller = AssociationManager.getInstance().retrieve(assId);
-		}
+		
+                // Get the user that sells the share
+                Account seller = AccountManager.getInstance().retrieveUserAccount(sellerAccountId);
+                
+                // if seller is still null, the seller might be an association
+		if (seller == null) seller = AssociationManager.getInstance().retrieve(assId);
+                
+                // Now perform security checks
+                if(seller == null) return false; // couldn't find seller
+                if(buyer == null) return false; // buyer doesnt exist
+                
+                
 
 		if (ownerShares.size() >= amount && (buyer.getBalance() >= (amount * getPrice(sellerAccountId, assId)))) {
 			float price = amount * getPrice(sellerAccountId, assId);
 
 			/** Pay **/
-			buyer.setBalance(buyer.getBalance() - price);
-			AccountManager.getInstance().saveAccount(buyer);
+			buyer.setBalance(buyer.getBalance() - price);       // Lose money
+			AccountManager.getInstance().saveAccount(buyer);    // 
 
 			/** Profit **/
 			if (seller instanceof UserAccount) {
 				UserAccount user = (UserAccount) seller;
 				user.setBalance(user.getBalance() + price);
+                                AccountManager.getInstance().saveAccount(user);
 			} else {
 				Association ass = (Association) seller;
 				ass.setBalance(ass.getBalance() + price);
+                                AssociationManager.getInstance().save(ass);
 			}
 
 			/** Deliver **/
