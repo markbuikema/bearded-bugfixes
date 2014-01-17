@@ -31,6 +31,11 @@ public class AccountManager {
         return instance;
     }
 
+    /**
+     * Creates a user for given account
+     * @param account
+     * @return 
+     */
     public final boolean createUser(UserAccount account)  {
         if (!accountExists(account)) {
             accounts.add(account);

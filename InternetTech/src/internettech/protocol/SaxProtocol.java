@@ -16,7 +16,6 @@ import internettech.model.Association;
 import internettech.model.Exchange;
 import internettech.model.Share;
 import internettech.model.UserAccount;
-import java.util.ArrayList;
 
 import java.util.List;
 
@@ -255,9 +254,9 @@ public final class SaxProtocol {
         } catch (NumberFormatException nf) {
             return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
         }
-        if (amount <= 0) {
-            return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-        }
+        
+        if (amount <= 0) return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
+        if(seller.equals(assId)) return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
 
         if (Exchange.getInstance().shareTransaction(user.getId(), seller, assId, amount)) {
             return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);

@@ -39,7 +39,7 @@ public class ShareManager {
 	 * @param share
 	 *            The share to store
 	 */
-	public final void storeShare(Share share) {
+	public final void save(Share share) {
 		shares.add(share);
 	}
 
