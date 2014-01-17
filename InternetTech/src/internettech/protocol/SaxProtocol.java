@@ -17,6 +17,7 @@ import internettech.model.Association;
 import internettech.model.Exchange;
 import internettech.model.Share;
 import internettech.model.UserAccount;
+import java.util.Arrays;
 
 import java.util.List;
 
@@ -242,11 +243,12 @@ public final class SaxProtocol {
         /**
          * Only continue if valid values *
          */
+        
         if (values.length != 4 || !isValid(values)) {
             return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
         }
 
-        String seller = values[1];
+        String sellerId = values[1];
         String assId = values[2];
 
         int amount;
@@ -257,13 +259,17 @@ public final class SaxProtocol {
         }
         
         if (amount <= 0) return new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
-        if(seller.equals(assId)) return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
+        // If the seller and the buyer are the same user
+        if(user.getId().equals(sellerId)) 
+            return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
 
-        if (Exchange.getInstance().shareTransaction(user.getId(), seller, assId, amount)) {
+        if (ShareManager.getInstance().transaction(user.getId(), sellerId, assId, amount)) {
             return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
-        } else if (ShareManager.getInstance().getSharesFromOwnerForSale(seller, assId).size() < amount) {
+        } else if (ShareManager.getInstance().getSharesFromOwnerForSale(sellerId, assId).size() < amount) {
             return new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);
         }
+        
+        System.err.println("FAIL!");
         return new SaxResponse(SaxStatus.SHARE_PURCHASE_FAIL);
     }
 

@@ -44,8 +44,9 @@ public class SaxProtocolTest {
 
     @Before
     public void setUp() {
-        testAccount_1 = new UserAccount("test1", "123456", testMoney);
-        testAccount_2 = new UserAccount("test2", "123456", testMoney);
+        setUpAccount_1();
+        setUpAccount_2();
+        
         testAssHasNoSales = new Association("hasNo");
         testAssHasSales = new Association("hasYes");
 
@@ -71,10 +72,10 @@ public class SaxProtocolTest {
             share.setForSale(false);
             ShareManager.getInstance().save(share);
         }
-
         
-        AccountManager.getInstance().createUser(testAccount_1);
-        AccountManager.getInstance().createUser(testAccount_2);
+        
+        
+        
         AssociationManager.getInstance().save(testAssHasSales);
         AssociationManager.getInstance().save(testAssHasNoSales);
         
@@ -118,7 +119,6 @@ public class SaxProtocolTest {
         SaxResponse expResult = new SaxResponse(SaxStatus.LOGIN_SUCCES);
         SaxResponse result = SaxProtocol.processRequest(input, null);
         
-        System.err.println(input);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
 
@@ -135,6 +135,7 @@ public class SaxProtocolTest {
         assertEquals(expResult.getStatus(), result.getStatus());
     }
 
+    
     @Test
     public void testProcessLoginPassBad() {
         System.out.println("test login no password");
@@ -266,7 +267,7 @@ public class SaxProtocolTest {
         int amount = 2;
         String assId = testAssHasNoSales.getId();
 
-        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
+        String input = method + " " + seller + " " + assId + " " + amount;
         SaxResponse expResult = new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount_1);
         assertEquals(expResult.getStatus(), result.getStatus());
@@ -281,7 +282,7 @@ public class SaxProtocolTest {
         int amount = -2;
         String assId = testAssHasSales.getId();
 
-        String input = method + " " + buyer + " " + seller + " " + assId + " " + amount;
+        String input = method + " " + seller + " " + assId + " " + amount;
         SaxResponse expResult = new SaxResponse(SaxStatus.NO_VALID_AMOUNT);
         SaxResponse result = SaxProtocol.processRequest(input, testAccount_1);
         assertEquals(expResult.getStatus(), result.getStatus());
@@ -325,6 +326,9 @@ public class SaxProtocolTest {
 
         int amount = ShareManager.getInstance().getSharesFromOwner(testAccount_1.getId(), testAssHasSales.getId()).size() + 1;
         assertTrue(amount > 0);
+        
+        
+        
 
         String assId = testAssHasSales.getId();
         float price = 6.0f;
@@ -352,9 +356,63 @@ public class SaxProtocolTest {
         assertEquals(expResult.getStatus(), result.getStatus());
     }
 
+    
     @Test
-    public void testProfitWhenSellingShares() {
-
+    public void testTransactionUsers() {
+        float user1BalanceBefore = testAccount_1.getBalance();
+        float user2BalanceBefore = testAccount_2.getBalance();
+        
+        System.out.println("balance before 1 = " + user1BalanceBefore);
+        System.out.println("balance before 2 = " + user2BalanceBefore);
+        
+        String method = "PURCHASE_SHARE";
+        String seller = testAccount_2.getId();
+        int amount = ShareManager.getInstance().getSharesFromOwner(seller, testAssHasSales.getId()).size();
+        
+        float price = 0.0f;
+        
+        
+        for(Share share : ShareManager.getInstance().getSharesFromOwner(seller, testAssHasSales.getId())) {
+            price += share.getPrice();
+        }
+        System.out.println("cost" + price);
+        
+        
+        String input = method + " "  +  seller + " " + testAssHasSales.getId() + " " + amount;
+        SaxResponse result = SaxProtocol.processRequest(input, testAccount_1);
+        SaxStatus expectedResult = SaxStatus.SHARE_PURCHASE_SUCCES;
+        
+        assertEquals(expectedResult, result.getStatus());
+        System.out.println("balance after " + testAccount_1.getBalance());
+        System.out.println("balance after " + testAccount_2.getBalance());
+        
+        assertTrue(testAccount_1.getBalance() == user1BalanceBefore - price);
+        assertTrue(testAccount_2.getBalance() == user2BalanceBefore + price);
+    }
+    
+    private void setUpAccount_2() {
+        String method = "CREATE_ACCOUNT";
+        String input = method;
+        SaxResponse accountContent = SaxProtocol.processRequest(input, null);
+        JSONObject obj = new JSONObject(accountContent.getContent());
+        assertNotNull(obj.get("password"));
+        assertNotNull(obj.getDouble("money"));
+        assertNotNull(obj.get("id"));
+        testAccount_2 = AccountManager.getInstance().retrieveUserAccount(obj.getString("id"));
+        testAccount_2.setBalance(testMoney);
+        AccountManager.getInstance().saveAccount(testAccount_2);
     }
 
+    private void setUpAccount_1() {
+        String method = "CREATE_ACCOUNT";
+        String input = method;
+        SaxResponse accountContent = SaxProtocol.processRequest(input, null);
+        JSONObject obj = new JSONObject(accountContent.getContent());
+        assertNotNull(obj.get("password"));
+        assertNotNull(obj.getDouble("money"));
+        assertNotNull(obj.get("id"));
+        testAccount_1 = AccountManager.getInstance().retrieveUserAccount(obj.getString("id"));
+        testAccount_1.setBalance(testMoney);
+        AccountManager.getInstance().saveAccount(testAccount_1);
+    }
 }

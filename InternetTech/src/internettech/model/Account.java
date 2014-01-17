@@ -34,4 +34,9 @@ public class Account {
 	public boolean nameMatches(String username) {
 		return this.name.equals(username);
 	}
+        
+        @Override
+        public String toString() {
+            return name;
+        }
 }

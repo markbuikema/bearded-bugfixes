@@ -36,11 +36,12 @@ public class AccountManager {
      * @param account
      * @return 
      */
-    public final boolean createUser(UserAccount account)  {
+    public final boolean createUser(final UserAccount account)  {
         if (!accountExists(account)) {
             accounts.add(account);
             return true;
         } else {
+            System.err.println("account already exists");
             return false;
         }
     }
@@ -54,12 +55,14 @@ public class AccountManager {
         return null;
     }
     
-     public void saveAccount(UserAccount account) {
+     public boolean saveAccount(UserAccount account) {
         for(int i = 0; i < accounts.size(); i++) {
             if(accounts.get(i).getId().equals(account.getId())){
                 accounts.set(i, account);
+                return true;
             }
         }
+        return false;
     }
 
     public final Account login(String username, String password)  {

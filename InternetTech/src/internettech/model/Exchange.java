@@ -58,10 +58,6 @@ public class Exchange {
 		return account;
 	}
 
-	public boolean shareTransaction(String buyerId, String sellerId, String assId, int amount) {
-		return ShareManager.getInstance().transaction(buyerId, sellerId, assId, amount);
-	}
-
 	private String generatePassword() {
 		SecureRandom random = new SecureRandom();
 		long passwordLong = random.nextLong();

@@ -97,6 +97,8 @@ public class ShareManager {
 	 */
 	public boolean transaction(String buyerAccountId, String sellerAccountId, String assId, int amount) {
 		List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);
+                
+                
 		UserAccount buyer = AccountManager.getInstance().retrieveUserAccount(buyerAccountId);
 		
                 // Get the user that sells the share
@@ -107,6 +109,8 @@ public class ShareManager {
                 
                 // Now perform security checks
                 if(seller == null) return false; // couldn't find seller
+                
+                
                 if(buyer == null) return false; // buyer doesnt exist
                 
                 
@@ -137,8 +141,10 @@ public class ShareManager {
 				share.setPrice(5.0f);
 				setShare(share);
 			}
+                        
 			return true;
 		}
+                
 		return false;
 	}
 
@@ -243,4 +249,5 @@ public class ShareManager {
 		}
 		return assShare;
 	}
+        
 }
