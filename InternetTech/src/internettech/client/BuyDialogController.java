@@ -3,9 +3,13 @@ package internettech.client;
 import internettech.json.JSONObject;
 import internettech.model.UserAccount;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -31,6 +35,8 @@ public class BuyDialogController implements Initializable {
 	private double price;
 
 	private UserAccount account;
+	private PrintWriter out;
+	private BufferedReader in;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -45,12 +51,11 @@ public class BuyDialogController implements Initializable {
 					int amount = Integer.valueOf(text);
 					if (amount > count)
 						costText.setText("Not available");
+					else if (amount * price > account.getBalance())
+						costText.setText("Insufficient funds");
 					else
 						costText.setText(Double.toString(amount * price));
 
-					if (amount * price > account.getBalance()) {
-						costText.setText("Insufficient funds");
-					}
 				} catch (NumberFormatException e) {
 					costText.setText("Not available");
 				}
@@ -58,8 +63,8 @@ public class BuyDialogController implements Initializable {
 		});
 	}
 
-	public BuyDialogController(JSONObject args, UserAccount account) {
-		System.out.println("BUY ARGS: " + args.toString());
+	public BuyDialogController(JSONObject args, UserAccount account, PrintWriter out, BufferedReader in) {
+		// System.out.println("BUY ARGS: " + args.toString());
 		assId = args.getString("associationId");
 		assName = args.getString("associationName");
 		sellerId = args.getString("ownerId");
@@ -68,11 +73,47 @@ public class BuyDialogController implements Initializable {
 		price = args.getDouble("price");
 
 		this.account = account;
+		this.out = out;
+		this.in = in;
 	}
 
 	@FXML
 	private void onConfirmClick(ActionEvent e) {
+		try {
+			Integer.valueOf(amountInput.getText());
+		} catch (NumberFormatException exception) {
+			return;
+		}
 
+		new Thread("Thread-withdraw") {
+			public void run() {
+				String fromServer, fromUser = "PURCHASE_SHARE " + sellerId + " " + assId + " " + amountInput.getText();
+				if (fromUser != null) {
+					System.out.println("Client: \n" + fromUser);
+					out.println(fromUser);
+				}
+				try {
+					if ((fromServer = in.readLine()) != null) {
+						System.out.println("Server: \n" + fromServer);
+						final float statusCode = Float.valueOf(fromServer.split("\\s")[0]);
+						final String content = statusCode == 1.4f ? fromServer.split("content: ")[1] : "";
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								if (statusCode == 1.4f) {
+									JSONObject balance = new JSONObject(content);
+									onCancelClick(null);
+								}
+							}
+						});
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ArrayIndexOutOfBoundsException e) {
+
+				}
+			}
+		}.start();
 	}
 
 	@FXML

@@ -8,15 +8,15 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
     <Label layoutX="14.0" layoutY="14.0" prefHeight="79.0" prefWidth="572.0" text="SaxExchange">
       <font>
         <Font size="48.0" />
       </font>
     </Label>
-    <ListView fx:id="associationList" layoutX="14.0" layoutY="93.0" prefHeight="286.0" prefWidth="415.0" />
-    <VBox layoutX="429.0" layoutY="13.0" prefHeight="365.0" prefWidth="157.0">
+    <ListView fx:id="associationList" layoutX="14.0" layoutY="114.0" prefHeight="219.0" prefWidth="415.0" />
+    <VBox layoutX="429.0" layoutY="13.0" prefHeight="366.0" prefWidth="157.0">
       <children>
         <HBox prefHeight="16.0" prefWidth="157.0">
           <children>
@@ -33,13 +33,17 @@
             <Label fx:id="moneyText" prefWidth="107.0" text="" />
           </children>
         </HBox>
-        <Separator prefHeight="21.0" prefWidth="157.0" />
+        <Separator prefHeight="28.0" prefWidth="157.0">
+          <VBox.margin>
+            <Insets top="9.0" />
+          </VBox.margin>
+        </Separator>
         <Label fx:id="status" text="">
           <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" fx:id="x1" />
           </VBox.margin>
         </Label>
-        <TextField fx:id="moneyInput" prefWidth="200.0" promptText="Money amount">
+        <TextField fx:id="moneyInput" prefHeight="37.0" prefWidth="147.0" promptText="Money amount">
           <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" fx:id="x1" />
           </VBox.margin>
@@ -58,5 +62,8 @@
     </VBox>
     <Separator layoutX="426.0" layoutY="14.0" orientation="VERTICAL" prefHeight="79.0" />
     <Button fx:id="backButton" layoutX="14.0" layoutY="77.0" mnemonicParsing="false" onAction="#onBackPressed" text="&lt;" visible="false" />
+    <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="363.0" prefWidth="415.0" text="My shares" textAlignment="CENTER" />
+    <ListView fx:id="myShareList" layoutX="14.0" layoutY="379.0" prefHeight="136.0" prefWidth="415.0" />
+    <Label alignment="CENTER" layoutX="14.0" layoutY="98.0" prefWidth="415.0" text="Shares for sale" />
   </children>
 </AnchorPane>

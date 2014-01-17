@@ -21,12 +21,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -63,6 +65,9 @@ public class ExchangeScreen implements Initializable {
 	private ListView<String> associationList;
 
 	@FXML
+	private ListView<String> myShareList;
+
+	@FXML
 	private Button backButton;
 
 	public ExchangeScreen(UserAccount acc, PrintWriter out, BufferedReader in) {
@@ -97,20 +102,28 @@ public class ExchangeScreen implements Initializable {
 					try {
 
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_buy_dialog.fxml"));
-						loader.setController(new BuyDialogController(shareArgs.get(index), account));
+						loader.setController(new BuyDialogController(shareArgs.get(index), account, out, in));
 						Parent root = (Parent) loader.load();
 						Scene scene = new Scene(root);
 						Stage dialog = new Stage();
 						dialog.setResizable(false);
 						dialog.initStyle(StageStyle.UTILITY);
+						dialog.initModality(Modality.WINDOW_MODAL);
 						dialog.setScene(scene);
-						dialog.show();
+						dialog.initOwner(((Node) e.getSource()).getScene().getWindow());
+						dialog.showAndWait();
+
+						onDialogDismissed();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 				}
 			}
 		});
+
+	}
+
+	protected void onDialogDismissed() {
 
 	}
 

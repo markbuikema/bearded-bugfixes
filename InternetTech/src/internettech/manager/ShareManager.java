@@ -98,7 +98,7 @@ public class ShareManager {
 	 *            The id of the association
 	 * @param amount
 	 *            The amount of shares to transact
-	 * @return true if transaction was succesfull, otherwise returns false
+	 * @return true if transaction was succesful, otherwise returns false
 	 */
 	public boolean transaction(String buyerAccountId, String sellerAccountId, String assId, int amount) {
 		List<Share> ownerShares = getSharesFromOwnerForSale(sellerAccountId, assId);

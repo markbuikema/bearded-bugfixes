@@ -233,12 +233,12 @@ public final class SaxProtocol {
 		}
 	}
 
-	private static SaxResponse purchaseShare(String input, Account user) {
+	private static SaxResponse purchaseShare(String input, UserAccount user) {
 		String[] values = input.split("\\s");
 		/**
 		 * Only continue if valid values *
 		 */
-		if (values.length != 5 || !isValid(values)) {
+		if (values.length != 4 || !isValid(values)) {
 			return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
 		}
 
@@ -256,7 +256,11 @@ public final class SaxProtocol {
 		}
 
 		if (Exchange.getInstance().shareTransaction(user.getId(), seller, assId, amount)) {
-			return new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+			SaxResponse response = new SaxResponse(SaxStatus.SHARE_PURCHASE_SUCCES);
+			JSONObject balance = new JSONObject();
+			balance.put("money", user.getBalance());
+			response.setContent(balance.toString());
+			return response;
 		} else if (ShareManager.getInstance().getSharesFromOwnerForSale(seller, assId).size() < amount) {
 			return new SaxResponse(SaxStatus.NOT_ENOUGH_SHARES);
 		}
