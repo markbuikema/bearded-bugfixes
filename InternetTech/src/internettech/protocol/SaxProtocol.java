@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -241,7 +242,7 @@ public final class SaxProtocol {
         /**
          * Only continue if valid values *
          */
-        if (values.length != 5 || !isValid(values)) {
+        if (values.length != 4 || !isValid(values)) {
             return new SaxResponse(SaxStatus.NO_VALID_COMMAND);
         }
 
