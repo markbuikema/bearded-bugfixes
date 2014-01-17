@@ -333,21 +333,4 @@ public class ExchangeScreen implements Initializable {
 		populateAssociationList();
 	}
         
-        @FXML
-        private void mySharesPressed(ActionEvent event) {
-            Parent root;
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml_shareoverview.fxml"));
-			loader.setController(new ShareOverViewController(account, out, in));
-			root = (Parent) loader.load();
-			Stage stage = new Stage();
-			stage.setTitle("My Shares");
-			stage.setResizable(false);
-			stage.setScene(new Scene(root));
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        }
-
 }
