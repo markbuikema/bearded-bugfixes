@@ -6,11 +6,8 @@
 package internettech.protocol;
 
 import internettech.json.JSONObject;
-import internettech.manager.AccountManager;
 import internettech.manager.ShareManager;
 import internettech.model.Association;
-import internettech.protocol.SaxResponse;
-import internettech.protocol.SaxStatus;
 import internettech.model.Share;
 import internettech.model.UserAccount;
 import org.junit.After;
@@ -79,6 +76,7 @@ public class SaxProtocolTest {
         SaxResponse result = SaxProtocol.processRequest(input, null);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
+    
 
     @Test
     public void testProcessRegister() {
@@ -333,6 +331,8 @@ public class SaxProtocolTest {
         SaxResponse result = SaxProtocol.processRequest(input, testAccount);
         assertEquals(expResult.getStatus(), result.getStatus());
     }
+    
+    
     
     
 
